@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, CheckCircle2, XCircle, Clock, Save, Edit3, User, Globe, Phone, MapPin, Receipt } from 'lucide-react';
+import { Building2, CheckCircle2, XCircle, Clock, Save, Edit3, User, Globe, MapPin, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Company {
