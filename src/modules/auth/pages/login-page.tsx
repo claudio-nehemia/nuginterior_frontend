@@ -44,40 +44,40 @@ export default function LoginPage() {
       
       <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]" />
       
-      <Card className="w-full max-w-[380px] relative z-10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] border-white/40 bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+      <Card className="w-full max-w-[330px] relative z-10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] border-white/40 bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-300 via-emerald-300 to-teal-300" />
         
-        <CardHeader className="space-y-3 items-center pt-10 pb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-emerald-400 rounded-[1.25rem] flex items-center justify-center text-white shadow-[0_8px_20px_-4px_rgba(52,211,153,0.4)] transform rotate-3 hover:rotate-0 transition-transform duration-300">
-            <Box size={32} strokeWidth={1.5} />
+        <CardHeader className="space-y-2 items-center pt-8 pb-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-emerald-400 rounded-[1rem] flex items-center justify-center text-white shadow-[0_8px_20px_-4px_rgba(52,211,153,0.4)] transform rotate-3 hover:rotate-0 transition-transform duration-300">
+            <Box size={24} strokeWidth={1.5} />
           </div>
           <div className="text-center space-y-0.5">
-            <CardTitle className="text-2xl font-black text-gray-800 tracking-tight">Interior Pro</CardTitle>
-            <CardDescription className="text-[11px] font-bold text-gray-500/80 uppercase tracking-widest">Management System ✨</CardDescription>
+            <CardTitle className="text-xl font-black text-gray-800 tracking-tight">Interior Pro</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-gray-500/80 uppercase tracking-widest">Management System ✨</CardDescription>
           </div>
         </CardHeader>
 
-        <CardContent className="px-9 pb-10">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Email Address</label>
+        <CardContent className="px-6 pb-8">
+          <form onSubmit={handleLogin} className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Email Address</label>
               <Input 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="hello@interiorpro.com" 
-                className="h-10 bg-white/50 border-gray-100 rounded-xl focus:ring-teal-400/20 focus:border-teal-400 transition-all text-xs text-gray-700"
+                className="h-9 bg-white/50 border-gray-100 rounded-xl focus:ring-teal-400/20 focus:border-teal-400 transition-all text-xs text-gray-700"
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Password</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Password</label>
               <Input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
-                className="h-10 bg-white/50 border-gray-100 rounded-xl focus:ring-teal-400/20 focus:border-teal-400 transition-all text-xs"
+                className="h-9 bg-white/50 border-gray-100 rounded-xl focus:ring-teal-400/20 focus:border-teal-400 transition-all text-xs"
                 required
               />
             </div>
@@ -94,18 +94,18 @@ export default function LoginPage() {
 
             <Button 
               type="submit" 
-              className="w-full h-11 mt-2 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-white font-bold text-sm rounded-xl transition-all shadow-[0_12px_24px_-8px_rgba(52,211,153,0.5)] active:scale-[0.98] disabled:opacity-70"
+              className="w-full h-10 mt-1 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-white font-bold text-sm rounded-xl transition-all shadow-[0_12px_24px_-8px_rgba(52,211,153,0.5)] active:scale-[0.98] disabled:opacity-70"
               disabled={isLoading}
             >
               {isLoading ? (
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-2 justify-center">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Logging in...
                 </span>
               ) : 'Sign In'}
             </Button>
 
-            <div className="text-center pt-4 border-t border-gray-100/50 mt-4">
+            <div className="text-center pt-3 border-t border-gray-100/50 mt-3">
               <span className="text-xs text-gray-500">Belum memiliki akun? </span>
               <a 
                 onClick={() => navigate('/register')} 

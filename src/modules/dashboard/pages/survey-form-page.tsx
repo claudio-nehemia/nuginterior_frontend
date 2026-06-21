@@ -298,11 +298,6 @@ export default function SurveyFormPage() {
     return currentUser?.name || '–';
   };
 
-  const formatDate = (val: string) => {
-    if (!val) return '–';
-    const d = new Date(val);
-    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -469,11 +464,20 @@ export default function SurveyFormPage() {
               label="Service Type"
               value={selectedOrderInfo?.jenis_interior || '–'}
             />
-            <InfoRow
-              icon={Calendar}
-              label="Tanggal Survey"
-              value={formatDate(form.tanggal_survey)}
-            />
+            <div className="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
+              <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center shrink-0 mt-0.5">
+                <Calendar size={13} className="text-teal-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Survey</p>
+                <Input
+                  type="date"
+                  value={form.tanggal_survey}
+                  onChange={e => setForm(prev => ({ ...prev, tanggal_survey: e.target.value }))}
+                  className="h-8 text-xs font-semibold text-gray-700 bg-white/50 border-gray-100 rounded-lg focus:ring-teal-400/20 focus:border-teal-400 transition-all w-full max-w-[200px]"
+                />
+              </div>
+            </div>
             <InfoRow
               icon={User}
               label="Surveyor"
