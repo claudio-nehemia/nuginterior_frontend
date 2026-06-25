@@ -10,7 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from '@/components/ui/dialog';
 import {
-  ArrowLeft, Download, Upload, Loader2, CheckCircle2, AlertCircle, Clock, Calendar, Eye, Receipt
+  ArrowLeft, Download, Upload, Loader2, CheckCircle2, AlertCircle, Clock, Calendar, Eye, Receipt, Coins
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -74,6 +74,21 @@ export default function InvoiceDetailPage() {
   // Inline action loading states
   const [updatingDeadlineId, setUpdatingDeadlineId] = useState<number | null>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [generating, setGenerating] = useState(false);
+
+  const handleGenerateInvoices = async () => {
+    if (!contractId) return;
+    setGenerating(true);
+    try {
+      const res = await api.post(`/invoices/contract/${contractId}/generate`);
+      toast.success(res.data.message || 'Invoice termin berhasil diterbitkan');
+      fetchDetail();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal menerbitkan invoice');
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const fetchDetail = async () => {
     if (!contractId) return;
@@ -307,127 +322,157 @@ export default function InvoiceDetailPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {detail.invoices.map((inv) => {
-                      const isPaid = inv.status === 'terbayar';
-                      const isOverdue = checkIsOverdue(inv);
+                    {detail.invoices.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={config.deadline_enabled ? 7 : 6} className="h-60 text-center">
+                          <div className="flex flex-col items-center justify-center gap-3 text-gray-450 text-xs">
+                            <Receipt size={32} className="text-gray-300" />
+                            <div className="space-y-1">
+                              <p className="font-bold text-gray-700">Belum ada invoice yang diterbitkan</p>
+                              <p className="text-[10px] text-gray-400">Pengaturan penerbitan otomatis dinonaktifkan. Anda harus menerbitkannya secara manual.</p>
+                            </div>
+                            <Button
+                              disabled={generating}
+                              onClick={handleGenerateInvoices}
+                              className="bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-md shadow-teal-500/10 transition-all mt-1"
+                            >
+                              {generating ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <Coins size={14} />
+                              )}
+                              Terbitkan Seluruh Invoice Termin
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      detail.invoices.map((inv) => {
+                        const isPaid = inv.status === 'terbayar';
+                        const isOverdue = checkIsOverdue(inv);
 
-                      return (
-                        <TableRow key={inv.id} className="border-gray-50 hover:bg-gray-50/30 transition-colors group">
-                          <TableCell className="font-bold text-gray-800 text-xs py-4.5 pl-6">
-                            {getInvoiceNumber(inv)}
-                          </TableCell>
-                          <TableCell className="font-semibold text-gray-700 text-xs py-4.5">
-                            {inv.keterangan}
-                          </TableCell>
-                          <TableCell className="font-bold text-teal-600 text-xs py-4.5 text-center">
-                            {inv.persentase}%
-                          </TableCell>
-                          <TableCell className="font-bold text-gray-800 text-xs py-4.5 text-right">
-                            {formatRupiah(inv.amount)}
-                          </TableCell>
-                          {config.deadline_enabled && (
+                        return (
+                          <TableRow key={inv.id} className="border-gray-50 hover:bg-gray-50/30 transition-colors group">
+                            <TableCell className="font-bold text-gray-800 text-xs py-4.5 pl-6">
+                              {getInvoiceNumber(inv)}
+                            </TableCell>
+                            <TableCell className="font-semibold text-gray-700 text-xs py-4.5">
+                              {inv.keterangan}
+                            </TableCell>
+                            <TableCell className="font-bold text-teal-600 text-xs py-4.5 text-center">
+                              {inv.persentase}%
+                            </TableCell>
+                            <TableCell className="font-bold text-gray-800 text-xs py-4.5 text-right">
+                              {formatRupiah(inv.amount)}
+                            </TableCell>
+                            {config.deadline_enabled && (
+                              <TableCell className="py-4.5">
+                                {isPaid ? (
+                                  <span className="text-gray-500 font-medium text-xs flex items-center gap-1">
+                                    <Calendar size={12} className="text-gray-400" />
+                                    {formatDate(inv.deadline)}
+                                  </span>
+                                ) : (
+                                  <div className="relative flex items-center gap-1.5 max-w-[150px]">
+                                    <input
+                                      type="date"
+                                      disabled={updatingDeadlineId === inv.id}
+                                      value={localDeadlines[inv.id] || ''}
+                                      onChange={(e) => {
+                                        setLocalDeadlines(prev => ({ ...prev, [inv.id]: e.target.value }));
+                                      }}
+                                      onBlur={() => {
+                                        const val = localDeadlines[inv.id] || '';
+                                        const originalVal = inv.deadline ? inv.deadline.substring(0, 10) : '';
+                                        const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(val);
+                                        if (isValidDate && val !== originalVal) {
+                                          handleUpdateDeadline(inv.id, val);
+                                        } else if (!isValidDate && val !== originalVal) {
+                                          setLocalDeadlines(prev => ({ ...prev, [inv.id]: originalVal }));
+                                        }
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.currentTarget.blur();
+                                        }
+                                      }}
+                                      className="w-full text-xs font-semibold text-gray-700 rounded-lg border border-gray-100 bg-gray-50/50 hover:bg-gray-50 focus:border-teal-400 focus:outline-none px-2 py-1 transition-all"
+                                    />
+                                    {updatingDeadlineId === inv.id && (
+                                      <Loader2 size={12} className="animate-spin text-teal-500 absolute right-2" />
+                                    )}
+                                  </div>
+                                )}
+                              </TableCell>
+                            )}
                             <TableCell className="py-4.5">
                               {isPaid ? (
-                                <span className="text-gray-500 font-medium text-xs flex items-center gap-1">
-                                  <Calendar size={12} className="text-gray-400" />
-                                  {formatDate(inv.deadline)}
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
+                                  <CheckCircle2 size={10} /> Terbayar
+                                </span>
+                              ) : isOverdue ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-100 shadow-sm">
+                                  <AlertCircle size={10} /> Telat
                                 </span>
                               ) : (
-                                <div className="relative flex items-center gap-1.5 max-w-[150px]">
-                                  <input
-                                    type="date"
-                                    disabled={updatingDeadlineId === inv.id}
-                                    value={localDeadlines[inv.id] || ''}
-                                    onChange={(e) => {
-                                      setLocalDeadlines(prev => ({ ...prev, [inv.id]: e.target.value }));
-                                    }}
-                                    onBlur={() => {
-                                      const val = localDeadlines[inv.id] || '';
-                                      const originalVal = inv.deadline ? inv.deadline.substring(0, 10) : '';
-                                      const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(val);
-                                      if (isValidDate && val !== originalVal) {
-                                        handleUpdateDeadline(inv.id, val);
-                                      } else if (!isValidDate && val !== originalVal) {
-                                        setLocalDeadlines(prev => ({ ...prev, [inv.id]: originalVal }));
-                                      }
-                                    }}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        e.currentTarget.blur();
-                                      }
-                                    }}
-                                    className="w-full text-xs font-semibold text-gray-700 rounded-lg border border-gray-100 bg-gray-50/50 hover:bg-gray-50 focus:border-teal-400 focus:outline-none px-2 py-1 transition-all"
-                                  />
-                                  {updatingDeadlineId === inv.id && (
-                                    <Loader2 size={12} className="animate-spin text-teal-500 absolute right-2" />
-                                  )}
-                                </div>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-50 text-gray-500 border border-gray-100">
+                                  <Clock size={10} /> Belum Bayar
+                                </span>
                               )}
                             </TableCell>
-                          )}
-                          <TableCell className="py-4.5">
-                            {isPaid ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
-                                <CheckCircle2 size={10} /> Terbayar
-                              </span>
-                            ) : isOverdue ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-100 shadow-sm">
-                                <AlertCircle size={10} /> Telat
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-50 text-gray-500 border border-gray-100">
-                                <Clock size={10} /> Belum Bayar
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell className="py-4.5 text-center pr-6">
-                            <div className="flex items-center justify-center gap-1.5">
-                              {/* Download PDF button */}
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                disabled={downloadingId === inv.id}
-                                onClick={() => handleDownloadPDF(inv)}
-                                className="h-8 w-8 p-0 rounded-lg border-teal-100 text-teal-600 hover:bg-teal-50 hover:text-teal-700 transition-colors shadow-sm"
-                                title="Unduh Invoice PDF"
-                              >
-                                {downloadingId === inv.id ? (
-                                  <Loader2 size={12} className="animate-spin" />
-                                ) : (
-                                  <Download size={12} />
-                                )}
-                              </Button>
-
-                              {/* Upload / View Proof button */}
-                              {isPaid ? (
-                                inv.payment_proof && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setProofUrl(inv.payment_proof || null);
-                                      setProofModalOpen(true);
-                                    }}
-                                    className="h-8 rounded-lg border-gray-100 text-gray-500 hover:bg-gray-50 text-[10px] font-bold flex items-center gap-1 shadow-sm"
-                                    title="Lihat bukti pembayaran"
-                                  >
-                                    <Eye size={12} /> Bukti
-                                  </Button>
-                                )
-                              ) : (
+                            <TableCell className="py-4.5 text-center pr-6">
+                              <div className="flex items-center justify-center gap-1.5">
+                                {/* Download PDF button */}
                                 <Button
                                   size="sm"
-                                  onClick={() => openUploadModal(inv)}
-                                  className="h-8 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-md shadow-teal-500/10"
+                                  variant="outline"
+                                  disabled={downloadingId === inv.id}
+                                  onClick={() => handleDownloadPDF(inv)}
+                                  className="h-8 w-8 p-0 rounded-lg border-teal-100 text-teal-600 hover:bg-teal-50 hover:text-teal-700 transition-colors shadow-sm"
+                                  title="Unduh Invoice PDF"
                                 >
-                                  <Upload size={12} /> Upload
+                                  {downloadingId === inv.id ? (
+                                    <Loader2 size={12} className="animate-spin" />
+                                  ) : (
+                                    <Download size={12} />
+                                  )}
                                 </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+
+                                {/* View Proof or Upload proof button */}
+                                {isPaid ? (
+                                  inv.payment_proof && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setProofUrl(
+                                          inv.payment_proof?.startsWith('http')
+                                            ? inv.payment_proof
+                                            : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${inv.payment_proof}`
+                                        );
+                                        setProofModalOpen(true);
+                                      }}
+                                      className="h-8 rounded-lg border-gray-100 text-gray-500 hover:bg-gray-50 text-[10px] font-bold flex items-center gap-1 shadow-sm"
+                                      title="Lihat bukti pembayaran"
+                                    >
+                                      <Eye size={12} /> Bukti
+                                    </Button>
+                                  )
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => openUploadModal(inv)}
+                                    className="h-8 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-md shadow-teal-500/10"
+                                  >
+                                    <Upload size={12} /> Upload
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
                   </TableBody>
                 </Table>
               </div>

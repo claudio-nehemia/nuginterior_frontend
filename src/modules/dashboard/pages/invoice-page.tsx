@@ -79,6 +79,20 @@ export default function InvoicePage() {
 
   // Action Loading
   const [respondingId, setRespondingId] = useState<number | null>(null);
+  const [generatingId, setGeneratingId] = useState<number | null>(null);
+
+  const handleGenerateInvoices = async (contractId: number) => {
+    setGeneratingId(contractId);
+    try {
+      const res = await api.post(`/invoices/contract/${contractId}/generate`);
+      toast.success(res.data.message || 'Invoice termin berhasil diterbitkan');
+      fetchInvoices();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal menerbitkan invoice');
+    } finally {
+      setGeneratingId(null);
+    }
+  };
 
   const fetchInvoices = async () => {
     setLoading(true);
@@ -269,7 +283,23 @@ export default function InvoicePage() {
                         </TableCell>
                         <TableCell className="py-4.5 text-center pr-6">
                           <div className="flex items-center justify-center gap-2">
-                            {requireResponse ? (
+                            {row.invoices.length === 0 ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={generatingId === row.contract_id}
+                                onClick={() => handleGenerateInvoices(row.contract_id)}
+                                className="h-8 rounded-lg text-amber-600 border-amber-100 hover:bg-amber-50 hover:text-amber-700 text-[10px] font-bold flex items-center gap-1.5 shadow-sm"
+                                title="Terbitkan invoice tagihan termin secara manual"
+                              >
+                                {generatingId === row.contract_id ? (
+                                  <Loader2 size={12} className="animate-spin" />
+                                ) : (
+                                  <Receipt size={12} />
+                                )}
+                                Terbitkan Invoice
+                              </Button>
+                            ) : requireResponse ? (
                               <Button
                                 size="sm"
                                 variant="outline"

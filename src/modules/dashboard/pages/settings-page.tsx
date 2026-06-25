@@ -714,6 +714,27 @@ export default function SettingsPage() {
       icon: Clock,
       color: 'amber',
     },
+    {
+      key: 'workflow_rab_approval_required',
+      title: 'Persetujuan RAB Klien (Kontrak)',
+      description: 'Menentukan apakah pembuatan Kontrak harus menunggu persetujuan (approval) RAB dari klien di sistem. Jika dimatikan, admin bisa langsung membuat draf kontrak kapan saja.',
+      icon: Shield,
+      color: 'teal',
+    },
+    {
+      key: 'finance_tax_enabled',
+      title: 'PPN (Pajak Pertambahan Nilai)',
+      description: 'Menentukan apakah sistem otomatis menambahkan PPN 11% pada setiap RAB dan Invoice yang terbit.',
+      icon: Coins,
+      color: 'amber',
+    },
+    {
+      key: 'finance_auto_invoice',
+      title: 'Otomatis Terbitkan Invoice',
+      description: 'Jika aktif, sistem otomatis men-generate seluruh invoice tagihan termin begitu kontrak disetujui (deal). Jika mati, harus diterbitkan manual.',
+      icon: Receipt,
+      color: 'purple',
+    },
   ];
 
   return (
