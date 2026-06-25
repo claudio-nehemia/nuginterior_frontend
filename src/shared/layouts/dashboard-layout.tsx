@@ -9,6 +9,7 @@ import {
   ChevronDown,
   CheckCircle,
   Inbox,
+  Menu,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as LucideIcons from 'lucide-react';
@@ -52,6 +53,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [pageTitle, setPageTitle] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [sidebarConfig, setSidebarConfig] = useState<any[]>([]);
   const [loadingSidebar, setLoadingSidebar] = useState(true);
@@ -197,8 +199,16 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFB]">
+      {/* Backdrop overlay for mobile */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-950/40 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-56 bg-white border-r border-gray-100 flex flex-col fixed inset-y-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+      <aside className={`w-56 bg-white border-r border-gray-100 flex flex-col fixed inset-y-0 z-40 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-transform duration-300 transform lg:translate-x-0 ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-14 flex items-center px-5 justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-lg shadow-teal-400/10 rotate-3 border border-gray-100/50 bg-white">
@@ -216,6 +226,7 @@ export default function DashboardLayout() {
                 <Link
                   key={item.name}
                   to={item.path}
+                  onClick={() => setIsMobileSidebarOpen(false)}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 ${
                     isActive 
                       ? 'bg-teal-400 text-white shadow-lg shadow-teal-400/30 translate-x-0.5' 
@@ -265,6 +276,7 @@ export default function DashboardLayout() {
                           <Link
                             key={item.code}
                             to={item.path}
+                            onClick={() => setIsMobileSidebarOpen(false)}
                             className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                               isActive 
                                 ? 'text-teal-600 bg-teal-50/50 font-bold' 
@@ -288,6 +300,7 @@ export default function DashboardLayout() {
             <div className="space-y-1">
               <Link
                 to="/dashboard/settings"
+                onClick={() => setIsMobileSidebarOpen(false)}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 ${
                   location.pathname.startsWith('/dashboard/settings')
                     ? 'bg-teal-400 text-white shadow-lg shadow-teal-400/30 translate-x-0.5' 
@@ -313,19 +326,28 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-56 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 lg:ml-56 ml-0 flex flex-col h-screen overflow-hidden">
         {/* Topbar */}
-        <header className="h-14 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 flex items-center justify-between shrink-0 shadow-sm shadow-gray-200/10">
-          <div className="flex flex-col">
-            <h2 className="text-sm font-extrabold text-gray-800 tracking-tight leading-none">
-              {pageTitle || fallbackTitle}
-            </h2>
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Overview & Insights</p>
+        <header className="h-14 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-sm shadow-gray-200/10">
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="p-1.5 text-gray-500 hover:text-teal-500 hover:bg-teal-50 rounded-lg lg:hidden transition-colors outline-none"
+            >
+              <Menu size={18} />
+            </button>
+            <div className="flex flex-col">
+              <h2 className="text-sm font-extrabold text-gray-800 tracking-tight leading-none">
+                {pageTitle || fallbackTitle}
+              </h2>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 hidden sm:block">Overview & Insights</p>
+            </div>
           </div>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-2 sm:gap-5">
             {user?.company_id === 1 && user?.role?.nama_role === 'Super Admin' && (
-              <div className="flex items-center gap-2 mr-1">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tenant:</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 mr-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">Tenant:</span>
                 <select
                   value={currentCompanyFilter}
                   onChange={(e) => {
@@ -338,7 +360,7 @@ export default function DashboardLayout() {
                     }
                     window.location.reload();
                   }}
-                  className="bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400 cursor-pointer transition-all"
+                  className="bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-[11px] sm:text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400 cursor-pointer transition-all max-w-[120px] sm:max-w-none"
                 >
                   <option value="all">Semua Perusahaan</option>
                   {activeCompanies.map((c) => (
