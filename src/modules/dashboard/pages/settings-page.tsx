@@ -347,6 +347,10 @@ export default function SettingsPage() {
     e.dataTransfer.effectAllowed = 'move';
   };
 
+  const handleCatDragEnd = () => {
+    setDraggedCatIndex(null);
+  };
+
   const handleCatDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
     if (draggedCatIndex === null || draggedCatIndex === targetIndex) return;
@@ -375,6 +379,10 @@ export default function SettingsPage() {
     }
     setDraggedMenuIndex({ catIdx, itemIdx });
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleMenuDragEnd = () => {
+    setDraggedMenuIndex(null);
   };
 
   const handleMenuDrop = (e: React.DragEvent, targetCatIdx: number, targetItemIdx: number) => {
@@ -1376,6 +1384,7 @@ export default function SettingsPage() {
                       onDragStart={(e) => handleCatDragStart(e, catIdx)}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => handleCatDrop(e, catIdx)}
+                      onDragEnd={handleCatDragEnd}
                       className={`p-5 rounded-2xl border transition-all duration-150 ${
                         draggedCatIndex === catIdx
                           ? 'opacity-40 bg-teal-50/20 border-dashed border-teal-200 shadow-inner'
@@ -1488,6 +1497,7 @@ export default function SettingsPage() {
                                     onDragStart={(e) => handleMenuDragStart(e, catIdx, itemIdx)}
                                     onDragOver={(e) => e.preventDefault()}
                                     onDrop={(e) => handleMenuDrop(e, catIdx, itemIdx)}
+                                    onDragEnd={handleMenuDragEnd}
                                     className={`transition-all duration-150 ${
                                       isDragged
                                         ? 'opacity-40 bg-teal-50/40 border-2 border-dashed border-teal-100'
