@@ -3,7 +3,7 @@ import {
   Document, Packer, Paragraph, TextRun, Table as DocxTable, TableRow as DocxTableRow, TableCell as DocxTableCell, 
   AlignmentType, WidthType, BorderStyle, PageBreak
 } from 'docx';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -230,8 +230,7 @@ export default function CommitmentFeePage() {
 
   const getFileUrl = (path: string) => {
     if (!path) return '';
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/api$/, '');
-    return `${base}${path}`;
+    return `${API_BASE_URL}${path}`;
   };
 
   const handlePreviewDesign = (mb: Moodboard) => {

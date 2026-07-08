@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Settings, Shield, Megaphone, Clock, Building, User, MapPin, CreditCard, Mail, Phone, Upload, ArrowUp, ArrowDown, Trash2, Plus, AlertCircle, CheckCircle2, GripVertical, Eye, EyeOff, Folder, PlusCircle, Database, Users, Box, Ruler, Palette, Calculator, FileText, Receipt, ShoppingCart, Coins, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
@@ -486,7 +486,17 @@ export default function SettingsPage() {
     setIsLoading(true);
     try {
       const res = await api.get('/settings/workplan-stages');
-      setStageTemplates(res.data.data || []);
+      const stages = (res.data.data || []).map((t: any) => ({
+        ...t,
+        code: t.code || t.name
+          .toLowerCase()
+          .replace(/dan/g, '_')
+          .replace(/\s+/g, '_')
+          .replace(/[^a-z0-9_]/g, '')
+          .replace(/_+/g, '_')
+          .replace(/^_+|_+$/g, ''),
+      }));
+      setStageTemplates(stages);
     } catch {
       toast.error('Gagal memuat templat tahapan');
     } finally {
@@ -974,7 +984,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => toggleSetting(card.key)}
-                      className="relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 bg-gray-200"
+                      className={`relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 ${enabled ? 'bg-teal-500' : 'bg-gray-200'}`}
                     >
                       <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${
                         enabled ? 'left-[22px]' : 'left-0.5'
@@ -1008,7 +1018,7 @@ export default function SettingsPage() {
                             <img
                               src={companyProfile.company_logo.startsWith('http')
                                 ? companyProfile.company_logo
-                                : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${companyProfile.company_logo}`}
+                                : `${API_BASE_URL}${companyProfile.company_logo}`}
                               alt="Logo"
                               className="w-full h-full object-contain"
                             />

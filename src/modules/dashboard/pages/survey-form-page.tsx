@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -114,11 +114,9 @@ export default function SurveyFormPage() {
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isUploadingMom, setIsUploadingMom] = useState(false);
 
-  const getFileUrl = (url: string) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/api$/, '');
-    return `${base}${url}`;
+  const getFileUrl = (path: string) => {
+    if (!path) return '';
+    return `${API_BASE_URL}${path}`;
   };
 
   useEffect(() => {

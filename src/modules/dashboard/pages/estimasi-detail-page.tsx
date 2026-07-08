@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -116,8 +116,7 @@ export default function EstimasiDetailPage() {
 
   const getFileUrl = (path: string) => {
     if (!path) return '';
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/api$/, '');
-    return `${base}${path}`;
+    return `${API_BASE_URL}${path}`;
   };
 
   if (isLoading) {

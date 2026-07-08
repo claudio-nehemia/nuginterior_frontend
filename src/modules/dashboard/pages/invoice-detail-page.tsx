@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -448,7 +448,7 @@ export default function InvoiceDetailPage() {
                                         setProofUrl(
                                           inv.payment_proof?.startsWith('http')
                                             ? inv.payment_proof
-                                            : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${inv.payment_proof}`
+                                            : `${API_BASE_URL}${inv.payment_proof}`
                                         );
                                         setProofModalOpen(true);
                                       }}

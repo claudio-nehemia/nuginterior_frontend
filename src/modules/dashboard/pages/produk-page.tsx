@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { api } from '@/lib/axios';
+import { api, API_BASE_URL } from '@/lib/axios';
 import { formatNumberInput, normalizeNumberInput, parseNumberInput } from '@/lib/number';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -337,7 +337,7 @@ export default function ProdukPage() {
   const activeDetailImageUrl = activeDetailImage?.image
     ? (activeDetailImage.image.startsWith('http')
         ? activeDetailImage.image
-        : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${activeDetailImage.image}`)
+        : `${API_BASE_URL}${activeDetailImage.image}`)
     : null;
 
   const handleDetailOpenChange = (open: boolean) => {
@@ -457,7 +457,7 @@ export default function ProdukPage() {
                     <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
                       {p.images?.[0]?.image ? (
                         <img 
-                          src={p.images[0].image.startsWith('http') ? p.images[0].image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${p.images[0].image}`} 
+                          src={p.images[0].image.startsWith('http') ? p.images[0].image : `${API_BASE_URL}${p.images[0].image}`} 
                           alt={p.nama_produk} 
                           className="w-full h-full object-cover"
                         />
@@ -536,7 +536,7 @@ export default function ProdukPage() {
                     {produkFormData.images.map((img, idx) => (
                       <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-200 group shadow-sm">
                         <img 
-                          src={img.startsWith('http') ? img : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${img}`} 
+                          src={img.startsWith('http') ? img : `${API_BASE_URL}${img}`} 
                           className="w-full h-full object-cover" 
                         />
                         <button 
@@ -818,7 +818,7 @@ export default function ProdukPage() {
                       >
                         {img.image ? (
                           <img
-                            src={img.image.startsWith('http') ? img.image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${img.image}`}
+                            src={img.image.startsWith('http') ? img.image : `${API_BASE_URL}${img.image}`}
                             className="w-full h-full object-cover"
                           />
                         ) : (

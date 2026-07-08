@@ -1,7 +1,16 @@
 import axios from 'axios';
 
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+// Dynamically resolve API_BASE_URL for images and uploads.
+// If local dev: http://localhost:8080/api -> http://localhost:8080
+// If production: /api -> "" (relative paths)
+export const API_BASE_URL = apiUrl.endsWith('/api') 
+  ? apiUrl.slice(0, -4) 
+  : (apiUrl.startsWith('http') ? apiUrl : '');
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: apiUrl,
 });
 
 api.interceptors.request.use((config) => {
