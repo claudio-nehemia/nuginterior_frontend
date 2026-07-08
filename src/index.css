@@ -214,8 +214,7 @@ html, body {
   @apply bg-background text-foreground font-sans;
 }
 
-/* Force all grey/muted text classes to render as black for better readability as requested */
-.text-gray-300,
+.text-gray-350,
 .text-gray-400,
 .text-gray-500,
 .text-gray-600,
@@ -229,4 +228,13 @@ html, body {
 .text-slate-600,
 .text-muted-foreground {
   color: #000000 !important;
+}
+
+/* Force placeholders (inputs, textareas, and select components) to remain gray so they aren't confused with typed text */
+input::placeholder,
+textarea::placeholder,
+[data-placeholder],
+[data-placeholder] * {
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
