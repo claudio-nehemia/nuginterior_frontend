@@ -22,6 +22,8 @@ interface Company {
   email: string;
   phone: string;
   status: 'pending' | 'verified' | 'rejected';
+  admin_email?: string;
+  expired_at?: string;
   created_at: string;
 }
 
@@ -43,6 +45,18 @@ export default function CompaniesPage() {
     bank_holder: '',
     email: '',
     phone: '',
+  });
+
+  const [expiryModal, setExpiryModal] = useState<{
+    isOpen: boolean;
+    companyId: number | null;
+    companyName: string;
+    expiredAt: string;
+  }>({
+    isOpen: false,
+    companyId: null,
+    companyName: '',
+    expiredAt: '',
   });
 
   // Extract auth info
@@ -151,6 +165,43 @@ export default function CompaniesPage() {
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Gagal memperbarui profil');
+    }
+  };
+
+  const handleSaveExpiry = async () => {
+    if (!expiryModal.companyId) return;
+    try {
+      const { data: detailData } = await api.get(`/companies/${expiryModal.companyId}`);
+      if (!detailData.success) {
+        toast.error('Gagal mengambil data detail perusahaan');
+        return;
+      }
+      
+      const fullCompany = detailData.data;
+      
+      const updatePayload = {
+        name: fullCompany.name,
+        director_name: fullCompany.director_name,
+        ceo_nik: fullCompany.ceo_nik,
+        nib: fullCompany.nib || undefined,
+        logo: fullCompany.logo || undefined,
+        address: fullCompany.address,
+        bank_name: fullCompany.bank_name || undefined,
+        bank_account: fullCompany.bank_account || undefined,
+        bank_holder: fullCompany.bank_holder || undefined,
+        email: fullCompany.email,
+        phone: fullCompany.phone,
+        expired_at: expiryModal.expiredAt ? expiryModal.expiredAt : null,
+      };
+
+      const { data } = await api.put(`/companies/${expiryModal.companyId}`, updatePayload);
+      if (data.success) {
+        toast.success('Masa berlaku akun berhasil diperbarui! ✨');
+        setExpiryModal(prev => ({ ...prev, isOpen: false }));
+        fetchCompanies();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal memperbarui masa berlaku');
     }
   };
 
@@ -281,28 +332,77 @@ export default function CompaniesPage() {
                         <TableHead className="text-xs font-bold">Direktur</TableHead>
                         <TableHead className="text-xs font-bold">Email & Telp</TableHead>
                         <TableHead className="text-xs font-bold">Bank Info</TableHead>
+                        <TableHead className="text-xs font-bold">Masa Berlaku</TableHead>
+                        <TableHead className="text-xs font-bold text-right">Aksi</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {verified.map((c) => (
-                        <TableRow key={c.id} className="hover:bg-gray-50/30">
-                          <TableCell className="font-bold text-xs text-gray-500">#{c.id}</TableCell>
-                          <TableCell className="font-bold text-xs text-gray-800">
-                            <div>{c.name}</div>
-                            {c.nib && <div className="text-[10px] text-gray-400 font-normal">NIB: {c.nib}</div>}
-                          </TableCell>
-                          <TableCell className="text-xs font-medium text-gray-700">{c.director_name}</TableCell>
-                          <TableCell className="text-xs">
-                            <div>{c.email}</div>
-                            <div className="text-[10px] text-gray-400">{c.phone}</div>
-                          </TableCell>
-                          <TableCell className="text-xs text-gray-500">
-                            {c.bank_name ? (
-                              <div>{c.bank_name} - {c.bank_account} <span className="text-[10px] block">a.n. {c.bank_holder}</span></div>
-                            ) : '-'}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {verified.map((c) => {
+                        const isExpired = c.expired_at && new Date(c.expired_at) < new Date();
+                        const expiryDate = c.expired_at ? new Date(c.expired_at).toLocaleDateString('id-ID', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        }) : 'Selamanya';
+
+                        return (
+                          <TableRow key={c.id} className="hover:bg-gray-50/30">
+                            <TableCell className="font-bold text-xs text-gray-500">#{c.id}</TableCell>
+                            <TableCell className="font-bold text-xs text-gray-800">
+                              <div>{c.name}</div>
+                              {c.nib && <div className="text-[10px] text-gray-400 font-normal">NIB: {c.nib}</div>}
+                            </TableCell>
+                            <TableCell className="text-xs font-medium text-gray-700">{c.director_name}</TableCell>
+                            <TableCell className="text-xs">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-1.5"><span className="text-[9px] bg-teal-50 text-teal-600 px-1 py-0.2 rounded font-extrabold uppercase shrink-0">Kantor</span> <span className="truncate">{c.email}</span></div>
+                                <div className="flex items-center gap-1.5"><span className="text-[9px] bg-purple-50 text-purple-600 px-1 py-0.2 rounded font-extrabold uppercase shrink-0">Admin</span> <span className="truncate">{c.admin_email || '-'}</span></div>
+                                <div className="text-[10px] text-gray-400 pl-1">{c.phone}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-xs text-gray-500">
+                              {c.bank_name ? (
+                                <div>{c.bank_name} - {c.bank_account} <span className="text-[10px] block">a.n. {c.bank_holder}</span></div>
+                              ) : '-'}
+                            </TableCell>
+                            <TableCell className="text-xs">
+                              <div className="flex items-center gap-1.5">
+                                {c.expired_at ? (
+                                  <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
+                                    isExpired 
+                                      ? 'bg-rose-50 text-rose-600 border-rose-100' 
+                                      : 'bg-amber-50 text-amber-600 border-amber-100'
+                                  }`}>
+                                    {expiryDate}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border bg-emerald-50 text-emerald-600 border-emerald-100">
+                                    Selamanya
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-teal-100 text-teal-600 hover:bg-teal-50 text-[11px] font-bold h-8 rounded-lg gap-1"
+                                onClick={() => {
+                                  const dateStr = c.expired_at ? new Date(c.expired_at).toISOString().split('T')[0] : '';
+                                  setExpiryModal({
+                                    isOpen: true,
+                                    companyId: c.id,
+                                    companyName: c.name,
+                                    expiredAt: dateStr,
+                                  });
+                                }}
+                              >
+                                <Clock size={12} /> Atur
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 )}
@@ -647,6 +747,46 @@ export default function CompaniesPage() {
             </CardContent>
           </Card>
         </form>
+      )}
+
+      {expiryModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <Card className="w-full max-w-[400px] border-0 shadow-2xl rounded-2xl bg-white overflow-hidden p-6 space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-gray-800">Atur Masa Berlaku Akun</h3>
+              <p className="text-[10px] font-medium text-gray-400 mt-0.5">Tentukan batas tanggal aktif untuk perusahaan <b>{expiryModal.companyName}</b></p>
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Tanggal Kedaluwarsa</label>
+              <Input
+                type="date"
+                value={expiryModal.expiredAt}
+                onChange={(e) => setExpiryModal(prev => ({ ...prev, expiredAt: e.target.value }))}
+                className="h-10 border-gray-100 rounded-xl text-xs"
+              />
+              <span className="text-[9px] text-gray-400 block mt-1">Kosongkan/hapus tanggal untuk mengatur masa aktif <b>Selamanya (Tanpa Batas)</b>.</span>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-2 border-t border-gray-50">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setExpiryModal(prev => ({ ...prev, isOpen: false }))}
+                className="h-9 text-gray-500 font-semibold hover:text-gray-700 transition-colors text-xs rounded-xl"
+              >
+                Batal
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveExpiry}
+                className="bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl h-9 px-4 shadow-[0_8px_16px_-6px_rgba(20,184,166,0.4)]"
+              >
+                Simpan
+              </Button>
+            </div>
+          </Card>
+        </div>
       )}
     </div>
   );
