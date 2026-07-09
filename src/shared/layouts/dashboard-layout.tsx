@@ -50,6 +50,7 @@ const getIcon = (name: string) => {
 export default function DashboardLayout() {
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
+  const isSuperAdmin = user?.company_id === 1 && user?.role?.nama_role === 'Super Admin';
   const navigate = useNavigate();
   const location = useLocation();
   const [pageTitle, setPageTitle] = useState<string | null>(null);
@@ -211,8 +212,8 @@ export default function DashboardLayout() {
       <aside className={`w-56 bg-white border-r border-gray-100 flex flex-col fixed inset-y-0 z-40 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-transform duration-300 transform lg:translate-x-0 ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-14 flex items-center px-5 justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-lg shadow-teal-400/10 rotate-3 border border-gray-100/50 bg-white">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-teal-400/5 rotate-3 border border-gray-100/50 bg-white">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-0.5" />
             </div>
             <span className="font-extrabold text-base text-gray-800 tracking-tight">Arsiflow</span>
           </div>
@@ -243,7 +244,14 @@ export default function DashboardLayout() {
           {loadingSidebar ? (
             <div className="text-center py-4 text-gray-400 text-[10px] font-semibold">Loading menu...</div>
           ) : (
-            sidebarConfig.map((cat: any) => {
+            sidebarConfig
+              .filter((cat: any) => {
+                if (isSuperAdmin) {
+                  return cat.id === 'master_data';
+                }
+                return true;
+              })
+              .map((cat: any) => {
               const allowedItems = (cat.items || []).filter((item: any) => {
                 if (item.visible === false) return false;
                 return !item.permission || hasPermission(item.permission);

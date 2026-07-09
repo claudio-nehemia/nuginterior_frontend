@@ -222,6 +222,7 @@ export default function CompaniesPage() {
 
   // ─── VIEW 1: SUPER ADMIN (MANAGE ALL TENANTS) ───
   if (isSuperAdmin) {
+    console.log("CompaniesPage rendering for Super Admin. expiryModal state:", expiryModal);
     const pending = companies.filter(c => c.status === 'pending');
     const verified = companies.filter(c => c.status === 'verified');
     const rejected = companies.filter(c => c.status === 'rejected');
@@ -237,7 +238,7 @@ export default function CompaniesPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="pending" className="w-full">
+        <Tabs defaultValue="verified" className="w-full">
           <TabsList className="bg-white/80 border border-gray-100 p-1 rounded-xl h-11 shadow-sm">
             <TabsTrigger value="pending" className="rounded-lg text-xs font-bold gap-2 px-4 data-[state=active]:bg-teal-50 data-[state=active]:text-teal-600">
               <Clock size={14} /> Menunggu Verifikasi ({pending.length})
@@ -388,7 +389,19 @@ export default function CompaniesPage() {
                                 variant="outline"
                                 className="border-teal-100 text-teal-600 hover:bg-teal-50 text-[11px] font-bold h-8 rounded-lg gap-1"
                                 onClick={() => {
-                                  const dateStr = c.expired_at ? new Date(c.expired_at).toISOString().split('T')[0] : '';
+                                  console.log("Atur button clicked for company:", c);
+                                  let dateStr = '';
+                                  if (c.expired_at && !c.expired_at.startsWith('0001-01-01')) {
+                                    try {
+                                      const d = new Date(c.expired_at);
+                                      if (!isNaN(d.getTime())) {
+                                        dateStr = d.toISOString().split('T')[0];
+                                      }
+                                    } catch (e) {
+                                      console.error("Error parsing date:", e);
+                                    }
+                                  }
+                                  console.log("Setting expiryModal state to open with dateStr:", dateStr);
                                   setExpiryModal({
                                     isOpen: true,
                                     companyId: c.id,
@@ -448,6 +461,46 @@ export default function CompaniesPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {expiryModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+            <Card className="w-full max-w-[400px] border-0 shadow-2xl rounded-2xl bg-white overflow-hidden p-6 space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-gray-800">Atur Masa Berlaku Akun</h3>
+                <p className="text-[10px] font-medium text-gray-400 mt-0.5">Tentukan batas tanggal aktif untuk perusahaan <b>{expiryModal.companyName}</b></p>
+              </div>
+              
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Tanggal Kedaluwarsa</label>
+                <Input
+                  type="date"
+                  value={expiryModal.expiredAt}
+                  onChange={(e) => setExpiryModal(prev => ({ ...prev, expiredAt: e.target.value }))}
+                  className="h-10 border-gray-100 rounded-xl text-xs"
+                />
+                <span className="text-[9px] text-gray-400 block mt-1">Kosongkan/hapus tanggal untuk mengatur masa aktif <b>Selamanya (Tanpa Batas)</b>.</span>
+              </div>
+
+              <div className="flex gap-2 justify-end pt-2 border-t border-gray-50">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setExpiryModal(prev => ({ ...prev, isOpen: false }))}
+                  className="h-9 text-gray-500 font-semibold hover:text-gray-700 transition-colors text-xs rounded-xl"
+                >
+                  Batal
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSaveExpiry}
+                  className="bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl h-9 px-4 shadow-[0_8px_16px_-6px_rgba(20,184,166,0.4)]"
+                >
+                  Simpan
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
     );
   }
@@ -747,46 +800,6 @@ export default function CompaniesPage() {
             </CardContent>
           </Card>
         </form>
-      )}
-
-      {expiryModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <Card className="w-full max-w-[400px] border-0 shadow-2xl rounded-2xl bg-white overflow-hidden p-6 space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-gray-800">Atur Masa Berlaku Akun</h3>
-              <p className="text-[10px] font-medium text-gray-400 mt-0.5">Tentukan batas tanggal aktif untuk perusahaan <b>{expiryModal.companyName}</b></p>
-            </div>
-            
-            <div className="space-y-1.5">
-              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Tanggal Kedaluwarsa</label>
-              <Input
-                type="date"
-                value={expiryModal.expiredAt}
-                onChange={(e) => setExpiryModal(prev => ({ ...prev, expiredAt: e.target.value }))}
-                className="h-10 border-gray-100 rounded-xl text-xs"
-              />
-              <span className="text-[9px] text-gray-400 block mt-1">Kosongkan/hapus tanggal untuk mengatur masa aktif <b>Selamanya (Tanpa Batas)</b>.</span>
-            </div>
-
-            <div className="flex gap-2 justify-end pt-2 border-t border-gray-50">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setExpiryModal(prev => ({ ...prev, isOpen: false }))}
-                className="h-9 text-gray-500 font-semibold hover:text-gray-700 transition-colors text-xs rounded-xl"
-              >
-                Batal
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSaveExpiry}
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl h-9 px-4 shadow-[0_8px_16px_-6px_rgba(20,184,166,0.4)]"
-              >
-                Simpan
-              </Button>
-            </div>
-          </Card>
-        </div>
       )}
     </div>
   );

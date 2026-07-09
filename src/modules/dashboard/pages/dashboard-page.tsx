@@ -22,6 +22,10 @@ import {
   Receipt,
   FileText,
   Loader2,
+  Shield,
+  Building2,
+  ArrowRight,
+  Settings,
 } from "lucide-react";
 import {
   Table,
@@ -70,6 +74,16 @@ export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [superAdminStats, setSuperAdminStats] = useState<{
+    totalUsers: number;
+    totalCompanies: number;
+    pendingCompanies: number;
+    verifiedCompanies: number;
+    rejectedCompanies: number;
+    recentCompanies: any[];
+  } | null>(null);
+
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -91,18 +105,50 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const initDashboard = async () => {
+      setIsLoading(true);
       try {
-        const res = await api.get("/dashboard/stats");
-        setData(res.data.data);
+        const { data: meData } = await api.get('/auth/me');
+        if (meData.success) {
+          const u = meData.data;
+          const isSuper = u.company_id === 1 && u.role?.nama_role === 'Super Admin';
+          setIsSuperAdmin(isSuper);
+          
+          if (isSuper) {
+            // Fetch super admin stats
+            const [companiesRes, usersRes] = await Promise.all([
+              api.get('/companies'),
+              api.get('/users')
+            ]);
+            
+            const companiesList = companiesRes.data.data || [];
+            const usersList = usersRes.data.data || [];
+            
+            setSuperAdminStats({
+              totalUsers: usersList.length,
+              totalCompanies: companiesList.length,
+              pendingCompanies: companiesList.filter((c: any) => c.status === 'pending').length,
+              verifiedCompanies: companiesList.filter((c: any) => c.status === 'verified').length,
+              rejectedCompanies: companiesList.filter((c: any) => c.status === 'rejected').length,
+              recentCompanies: [...companiesList]
+                .sort((a, b) => b.id - a.id)
+                .slice(0, 5),
+            });
+          } else {
+            // Fetch normal tenant stats
+            const statsRes = await api.get('/dashboard/stats');
+            setData(statsRes.data.data);
+          }
+        }
       } catch (err) {
-        toast.error("Gagal memuat statistik dashboard");
         console.error(err);
+        toast.error("Gagal memuat data dashboard");
       } finally {
         setIsLoading(false);
       }
     };
-    fetchStats();
+    
+    initDashboard();
   }, []);
 
   const formatRupiah = (val: number) => {
@@ -152,6 +198,248 @@ export default function DashboardPage() {
       desc: "Rasio penyelesaian proyek",
     },
   ];
+
+  if (isSuperAdmin) {
+    return (
+      <div className="space-y-6 p-2 animate-in fade-in duration-700">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
+              <Shield className="text-teal-500" /> Platform Administration
+            </h1>
+            <p className="text-xs text-gray-500 font-medium">Platform-wide overview, tenant management, and system stats</p>
+          </div>
+          <div className="flex items-center gap-2 bg-teal-50/50 px-3.5 py-2 rounded-xl border border-teal-100">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider">System Online & Active</span>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden p-5 flex items-center gap-4 relative group hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
+            <div className="absolute top-0 left-0 w-full h-1 bg-teal-400" />
+            <div className="w-12 h-12 bg-teal-50 text-teal-500 rounded-xl flex items-center justify-center shrink-0">
+              <Users size={22} />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Total Pengguna</span>
+              <span className="text-2xl font-black text-gray-800 tracking-tight mt-0.5 block">
+                {isLoading ? "..." : superAdminStats?.totalUsers || 0}
+              </span>
+            </div>
+          </Card>
+
+          <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden p-5 flex items-center gap-4 relative group hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
+            <div className="absolute top-0 left-0 w-full h-1 bg-indigo-400" />
+            <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center shrink-0">
+              <Building2 size={22} />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Total Perusahaan</span>
+              <span className="text-2xl font-black text-gray-800 tracking-tight mt-0.5 block">
+                {isLoading ? "..." : superAdminStats?.totalCompanies || 0}
+              </span>
+            </div>
+          </Card>
+
+          <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden p-5 flex items-center gap-4 relative group hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
+            <div className="absolute top-0 left-0 w-full h-1 bg-emerald-400" />
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+              <CheckCircle2 size={22} className="text-emerald-500" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Terverifikasi</span>
+              <span className="text-2xl font-black text-emerald-600 tracking-tight mt-0.5 block">
+                {isLoading ? "..." : superAdminStats?.verifiedCompanies || 0}
+              </span>
+            </div>
+          </Card>
+
+          <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden p-5 flex items-center gap-4 relative group hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
+            <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
+            <div className="w-12 h-12 bg-amber-50 text-amber-50 rounded-xl flex items-center justify-center shrink-0">
+              <Clock size={22} className="text-amber-500" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Menunggu Verifikasi</span>
+              <span className="text-2xl font-black text-amber-600 tracking-tight mt-0.5 block">
+                {isLoading ? "..." : superAdminStats?.pendingCompanies || 0}
+              </span>
+            </div>
+          </Card>
+        </div>
+
+        {/* Breakdown & Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent registrations */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-gray-800 tracking-tight">Pendaftaran Perusahaan Terbaru</h2>
+              <Button 
+                onClick={() => navigate('/dashboard/companies')}
+                variant="ghost" 
+                className="text-teal-600 hover:text-teal-700 hover:bg-teal-50 text-xs font-bold gap-1 rounded-xl h-8 px-3 transition-all"
+              >
+                Lihat Semua <ArrowRight size={14} />
+              </Button>
+            </div>
+
+            <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden">
+              <CardContent className="p-0">
+                {isLoading ? (
+                  <div className="text-center py-12 text-gray-400 text-xs">Loading...</div>
+                ) : !superAdminStats?.recentCompanies || superAdminStats.recentCompanies.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 text-xs">Belum ada pendaftaran perusahaan.</div>
+                ) : (
+                  <Table>
+                    <TableHeader className="bg-gray-50/50">
+                      <TableRow>
+                        <TableHead className="text-xs font-bold">Perusahaan</TableHead>
+                        <TableHead className="text-xs font-bold">Direktur</TableHead>
+                        <TableHead className="text-xs font-bold">Status</TableHead>
+                        <TableHead className="text-xs font-bold text-right">Aksi</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {superAdminStats.recentCompanies.map((c: any) => (
+                        <TableRow key={c.id} className="hover:bg-gray-50/30">
+                          <TableCell className="font-bold text-xs text-gray-800">
+                            <div>{c.name}</div>
+                            <div className="text-[10px] text-gray-400 font-normal">{c.email}</div>
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-650 font-medium">{c.director_name}</TableCell>
+                          <TableCell className="text-xs">
+                            <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
+                              c.status === 'verified'
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                : c.status === 'rejected'
+                                ? 'bg-rose-50 text-rose-600 border-rose-100'
+                                : 'bg-amber-50 text-amber-600 border-amber-100'
+                            }`}>
+                              {c.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              onClick={() => navigate('/dashboard/companies')}
+                              size="sm"
+                              variant="ghost"
+                              className="text-teal-600 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold h-7 rounded-lg"
+                            >
+                              Detail
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions & Status distribution */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-sm font-bold text-gray-800 tracking-tight">Tindakan Cepat Administrasi</h2>
+              <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white p-5 space-y-3">
+                <Button 
+                  onClick={() => navigate('/dashboard/companies')}
+                  className="w-full justify-start gap-3 h-11 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-[0_8px_16px_-6px_rgba(20,184,166,0.3)] transition-all"
+                >
+                  <Building2 size={16} /> Kelola & Verifikasi Perusahaan
+                </Button>
+                <Button 
+                  onClick={() => navigate('/dashboard/roles')}
+                  variant="outline"
+                  className="w-full justify-start gap-3 h-11 border-gray-150 text-gray-700 hover:bg-gray-50 font-bold text-xs rounded-xl transition-all"
+                >
+                  <Users size={16} className="text-gray-400" /> Manajemen Peran & Pengguna
+                </Button>
+                <Button 
+                  onClick={() => navigate('/dashboard/settings')}
+                  variant="outline"
+                  className="w-full justify-start gap-3 h-11 border-gray-150 text-gray-700 hover:bg-gray-50 font-bold text-xs rounded-xl transition-all"
+                >
+                  <Settings size={16} className="text-gray-400" /> Platform & Global Settings
+                </Button>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-sm font-bold text-gray-800 tracking-tight">Rasio Status Perusahaan</h2>
+              <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white p-5 space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[11px] font-bold text-gray-500">
+                    <span>Terverifikasi ({superAdminStats?.verifiedCompanies || 0})</span>
+                    <span>
+                      {superAdminStats?.totalCompanies 
+                        ? Math.round((superAdminStats.verifiedCompanies / superAdminStats.totalCompanies) * 100)
+                        : 0}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500" 
+                      style={{ 
+                        width: `${superAdminStats?.totalCompanies 
+                          ? (superAdminStats.verifiedCompanies / superAdminStats.totalCompanies) * 100 
+                          : 0}%` 
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[11px] font-bold text-gray-500">
+                    <span>Menunggu Verifikasi ({superAdminStats?.pendingCompanies || 0})</span>
+                    <span>
+                      {superAdminStats?.totalCompanies 
+                        ? Math.round((superAdminStats.pendingCompanies / superAdminStats.totalCompanies) * 100)
+                        : 0}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-amber-500 rounded-full transition-all duration-500" 
+                      style={{ 
+                        width: `${superAdminStats?.totalCompanies 
+                          ? (superAdminStats.pendingCompanies / superAdminStats.totalCompanies) * 100 
+                          : 0}%` 
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[11px] font-bold text-gray-500">
+                    <span>Ditolak ({superAdminStats?.rejectedCompanies || 0})</span>
+                    <span>
+                      {superAdminStats?.totalCompanies 
+                        ? Math.round((superAdminStats.rejectedCompanies / superAdminStats.totalCompanies) * 100)
+                        : 0}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-rose-500 rounded-full transition-all duration-500" 
+                      style={{ 
+                        width: `${superAdminStats?.totalCompanies 
+                          ? (superAdminStats.rejectedCompanies / superAdminStats.totalCompanies) * 100 
+                          : 0}%` 
+                      }} 
+                    />
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { api, API_BASE_URL } from '@/lib/axios';
-import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Settings, Shield, Megaphone, Clock, Building, User, MapPin, CreditCard, Mail, Phone, Upload, ArrowUp, ArrowDown, Trash2, Plus, AlertCircle, CheckCircle2, GripVertical, Eye, EyeOff, Folder, PlusCircle, Database, Users, Box, Ruler, Palette, Calculator, FileText, Receipt, ShoppingCart, Coins, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
@@ -31,11 +30,10 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
 
 export default function SettingsPage() {
   const { refreshSidebar } = useOutletContext<{ refreshSidebar?: () => void }>() || {};
-  const user = useAuthStore(state => state.user);
-  const isSuperAdmin = user?.company_id === 1 && user?.role?.nama_role === 'Super Admin';
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [settings, setSettings] = useState<SettingItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'response' | 'company' | 'stages' | 'sidebar' | 'deadlines' | 'notifications'>('response');
+  const [activeTab, setActiveTab] = useState<'response' | 'company' | 'stages' | 'sidebar' | 'deadlines' | 'notifications' | 'platform'>('response');
 
   // State for Company Profile Form
   const [companyProfile, setCompanyProfile] = useState({
@@ -616,6 +614,19 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const { data } = await api.get('/auth/me');
+        if (data.success) {
+          const u = data.data;
+          const isSuper = u.company_id === 1 && u.role?.nama_role === 'Super Admin';
+          setIsSuperAdmin(isSuper);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+      }
+    };
+    checkRole();
     fetchSettings();
   }, []);
 
@@ -841,6 +852,21 @@ export default function SettingsPage() {
         >
           Notifications
         </button>
+        {isSuperAdmin && (
+          <button
+            onClick={() => {
+              setActiveTab('platform');
+              fetchSettings();
+            }}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'platform'
+                ? 'bg-white text-gray-800 shadow-sm'
+                : 'text-gray-500 hover:text-gray-750'
+            }`}
+          >
+            Platform Settings
+          </button>
+        )}
       </div>
 
       {activeTab === 'notifications' ? (
@@ -997,45 +1023,52 @@ export default function SettingsPage() {
                 );
               })
             )}
-            {isSuperAdmin && (
-              <div className="flex items-center justify-between px-6 py-5 group hover:bg-gray-50/50 transition-colors border-t border-gray-50">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-teal-50 text-teal-500">
-                    <Clock size={18} strokeWidth={2} />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-800">Masa Berlaku Default Perusahaan Baru (Hari)</h3>
-                    <p className="text-[10px] font-medium text-gray-400 mt-0.5 max-w-md">Tentukan jumlah hari masa berlaku akun default saat sebuah perusahaan mendaftar baru di sistem.</p>
-                  </div>
+          </CardContent>
+        </Card>
+      ) : activeTab === 'platform' && isSuperAdmin ? (
+        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white animate-in slide-in-from-right duration-300">
+          <div className="px-6 py-4 border-b border-gray-50">
+            <h2 className="text-sm font-bold text-gray-800 tracking-tight">Platform Settings</h2>
+            <p className="text-[10px] font-medium text-gray-400 mt-0.5">Konfigurasi khusus platform multi-tenant (Hanya Super Admin)</p>
+          </div>
+          <CardContent className="p-0 divide-y divide-gray-50">
+            <div className="flex items-center justify-between px-6 py-5 group hover:bg-gray-50/50 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-teal-50 text-teal-500">
+                  <Clock size={18} strokeWidth={2} />
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <input
-                    type="number"
-                    min="1"
-                    value={settings.find(s => s.key === 'default_active_days')?.value || '4'}
-                    onChange={async (e) => {
-                      const val = e.target.value;
-                      setSettings(prev => {
-                        const existing = prev.find(s => s.key === 'default_active_days');
-                        if (existing) {
-                          return prev.map(s => s.key === 'default_active_days' ? { ...s, value: val } : s);
-                        } else {
-                          return [...prev, { id: 0, key: 'default_active_days', value: val, description: 'Masa berlaku akun default untuk perusahaan baru (hari)' }];
-                        }
-                      });
-                      try {
-                        await api.put(`/settings/default_active_days`, { value: val });
-                        toast.success('Masa aktif default berhasil disimpan');
-                      } catch {
-                        toast.error('Gagal menyimpan masa aktif default');
-                      }
-                    }}
-                    className="w-16 h-8 text-center text-xs font-bold border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400"
-                  />
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hari</span>
+                <div>
+                  <h3 className="text-xs font-bold text-gray-800">Masa Berlaku Default Perusahaan Baru (Hari)</h3>
+                  <p className="text-[10px] font-medium text-gray-400 mt-0.5 max-w-md">Tentukan jumlah hari masa berlaku akun default saat sebuah perusahaan mendaftar baru di sistem.</p>
                 </div>
               </div>
-            )}
+              <div className="flex items-center gap-2 shrink-0">
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.find(s => s.key === 'default_active_days')?.value || '4'}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    setSettings(prev => {
+                      const existing = prev.find(s => s.key === 'default_active_days');
+                      if (existing) {
+                        return prev.map(s => s.key === 'default_active_days' ? { ...s, value: val } : s);
+                      } else {
+                        return [...prev, { id: 0, key: 'default_active_days', value: val, description: 'Masa berlaku akun default untuk perusahaan baru (hari)' }];
+                      }
+                    });
+                    try {
+                      await api.put(`/settings/default_active_days`, { value: val });
+                      toast.success('Masa aktif default berhasil disimpan');
+                    } catch {
+                      toast.error('Gagal menyimpan masa aktif default');
+                    }
+                  }}
+                  className="w-16 h-8 text-center text-xs font-bold border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400"
+                />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hari</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ) : activeTab === 'company' ? (
