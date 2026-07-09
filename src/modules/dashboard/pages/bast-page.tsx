@@ -389,7 +389,7 @@ export default function BastPage() {
               disabled={isGenerating || !canGenerate}
               className={`font-semibold text-sm flex items-center gap-2 px-5 h-10 transition-all ${
                 canGenerate
-                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-md hover:shadow-lg'
+                  ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-md hover:shadow-lg'
                   : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               }`}
               title={

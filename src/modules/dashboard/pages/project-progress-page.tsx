@@ -753,7 +753,7 @@ export default function ProjectProgressPage() {
           {stages.length > 0 && stages.every(s => s.status === 'completed') && (
             <Button
               onClick={() => navigate(`/dashboard/bast/${orderId}`)}
-              className="relative bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 py-2 px-3 rounded-lg shadow-md animate-pulse"
+              className="relative bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs flex items-center gap-1.5 py-2 px-3 rounded-lg shadow-md animate-pulse"
             >
               <ClipboardCheck className="h-4 w-4" />
               Proses BAST

@@ -167,6 +167,17 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-teal-50: #f0f5ff;
+  --color-teal-100: #dbebff;
+  --color-teal-200: #bed7ff;
+  --color-teal-300: #93beff;
+  --color-teal-400: #5d9bff;
+  --color-teal-500: #1f67fd;
+  --color-teal-600: #124edb;
+  --color-teal-700: #0f3cb3;
+  --color-teal-800: #113390;
+  --color-teal-900: #132e74;
+  --color-teal-950: #0c1b47;
 }
 
 .dark {

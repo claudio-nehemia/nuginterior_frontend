@@ -351,7 +351,7 @@ export default function RabEditPage() {
 			</div>
 
 			{/* Formula Info Banner */}
-			<div className="bg-gradient-to-r from-teal-500/10 to-teal-500/5 border border-teal-200/80 p-4 rounded-2xl flex items-start gap-3 text-teal-800">
+			<div className="bg-teal-50 border border-teal-200/80 p-4 rounded-2xl flex items-start gap-3 text-teal-800">
 				<AlertCircle size={20} className="text-teal-600 shrink-0 mt-0.5" />
 				<div className="space-y-1">
 					<span className="font-extrabold text-xs block text-teal-900">Alur Rumus Kalkulasi RAB Finance</span>
@@ -386,7 +386,7 @@ export default function RabEditPage() {
 				</Card>
 
 				{/* Live Total Card */}
-				<Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white">
+				<Card className="border-0 shadow-sm rounded-2xl bg-teal-500 text-white">
 					<CardContent className="p-5 flex items-center justify-between">
 						<div>
 							<span className="text-[10px] font-bold text-teal-100 uppercase tracking-widest block">Estimasi Grand Total</span>

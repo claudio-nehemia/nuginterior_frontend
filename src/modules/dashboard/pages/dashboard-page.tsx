@@ -506,7 +506,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Logged In Info */}
-        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white p-1.5">
+        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-teal-500 text-white p-1.5">
           <CardContent className="p-6 flex flex-col h-full justify-between space-y-6">
             <div className="space-y-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-lg flex items-center justify-center shadow-xl">
@@ -545,7 +545,7 @@ export default function DashboardPage() {
               </p>
               <div className="h-[1px] bg-white/20" />
               <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-teal-100">
-                Interior Pro v1.0
+                Arsiflow v1.0
               </p>
             </div>
           </CardContent>

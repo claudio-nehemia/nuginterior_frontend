@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { api, API_BASE_URL } from '@/lib/axios';
+import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Settings, Shield, Megaphone, Clock, Building, User, MapPin, CreditCard, Mail, Phone, Upload, ArrowUp, ArrowDown, Trash2, Plus, AlertCircle, CheckCircle2, GripVertical, Eye, EyeOff, Folder, PlusCircle, Database, Users, Box, Ruler, Palette, Calculator, FileText, Receipt, ShoppingCart, Coins, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,6 +31,8 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
 
 export default function SettingsPage() {
   const { refreshSidebar } = useOutletContext<{ refreshSidebar?: () => void }>() || {};
+  const user = useAuthStore(state => state.user);
+  const isSuperAdmin = user?.company_id === 1 && user?.role?.nama_role === 'Super Admin';
   const [settings, setSettings] = useState<SettingItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'response' | 'company' | 'stages' | 'sidebar' | 'deadlines' | 'notifications'>('response');
@@ -994,6 +997,45 @@ export default function SettingsPage() {
                 );
               })
             )}
+            {isSuperAdmin && (
+              <div className="flex items-center justify-between px-6 py-5 group hover:bg-gray-50/50 transition-colors border-t border-gray-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-teal-50 text-teal-500">
+                    <Clock size={18} strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-800">Masa Berlaku Default Perusahaan Baru (Hari)</h3>
+                    <p className="text-[10px] font-medium text-gray-400 mt-0.5 max-w-md">Tentukan jumlah hari masa berlaku akun default saat sebuah perusahaan mendaftar baru di sistem.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <input
+                    type="number"
+                    min="1"
+                    value={settings.find(s => s.key === 'default_active_days')?.value || '4'}
+                    onChange={async (e) => {
+                      const val = e.target.value;
+                      setSettings(prev => {
+                        const existing = prev.find(s => s.key === 'default_active_days');
+                        if (existing) {
+                          return prev.map(s => s.key === 'default_active_days' ? { ...s, value: val } : s);
+                        } else {
+                          return [...prev, { id: 0, key: 'default_active_days', value: val, description: 'Masa berlaku akun default untuk perusahaan baru (hari)' }];
+                        }
+                      });
+                      try {
+                        await api.put(`/settings/default_active_days`, { value: val });
+                        toast.success('Masa aktif default berhasil disimpan');
+                      } catch {
+                        toast.error('Gagal menyimpan masa aktif default');
+                      }
+                    }}
+                    className="w-16 h-8 text-center text-xs font-bold border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400"
+                  />
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hari</span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : activeTab === 'company' ? (
@@ -1058,7 +1100,7 @@ export default function SettingsPage() {
                           value={companyProfile.company_name}
                           onChange={(e) => setCompanyProfile(p => ({ ...p, company_name: e.target.value }))}
                           className="w-full pl-9 pr-3 py-2 text-xs border border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none transition-colors bg-white font-medium"
-                          placeholder="Contoh: PT. INTERIORPRO INDONESIA"
+                          placeholder="Contoh: PT. ARSIFLOW INDONESIA"
                         />
                       </div>
                     </div>
@@ -1132,7 +1174,7 @@ export default function SettingsPage() {
                           value={companyProfile.company_bank_holder}
                           onChange={(e) => setCompanyProfile(p => ({ ...p, company_bank_holder: e.target.value }))}
                           className="w-full px-3 py-2 text-xs border border-teal-100 rounded-xl focus:border-teal-500 focus:outline-none transition-colors bg-white font-medium text-gray-800"
-                          placeholder="Contoh: PT. INTERIORPRO INDONESIA"
+                          placeholder="Contoh: PT. ARSIFLOW INDONESIA"
                         />
                       </div>
                     </div>
@@ -1146,7 +1188,7 @@ export default function SettingsPage() {
                           value={companyProfile.company_email}
                           onChange={(e) => setCompanyProfile(p => ({ ...p, company_email: e.target.value }))}
                           className="w-full pl-9 pr-3 py-2 text-xs border border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none transition-colors bg-white font-medium"
-                          placeholder="Contoh: finance@interiorpro.com"
+                          placeholder="Contoh: finance@arsiflow.com"
                         />
                       </div>
                     </div>

@@ -214,7 +214,7 @@ export default function DashboardLayout() {
             <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-lg shadow-teal-400/10 rotate-3 border border-gray-100/50 bg-white">
               <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-extrabold text-base text-gray-800 tracking-tight">Interior Pro</span>
+            <span className="font-extrabold text-base text-gray-800 tracking-tight">Arsiflow</span>
           </div>
         </div>
 
@@ -433,7 +433,7 @@ export default function DashboardLayout() {
                   <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{user?.role?.nama_role || 'Administrator'}</div>
                 </div>
                 <Avatar className="h-8 w-8 rounded-lg shadow-inner border-2 border-white ring-1 ring-gray-100 transition-transform group-hover:scale-105">
-                  <AvatarFallback className="bg-gradient-to-br from-teal-50 to-emerald-50 text-teal-600 font-bold text-[10px]">
+                  <AvatarFallback className="bg-teal-50 text-teal-600 font-bold text-[10px]">
                     {user?.name ? user.name.split(' ').map((x: string) => x[0]).join('').substring(0, 2).toUpperCase() : 'AU'}
                   </AvatarFallback>
                 </Avatar>

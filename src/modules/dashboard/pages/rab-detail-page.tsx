@@ -317,7 +317,7 @@ export default function RabDetailPage() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white">
+				<Card className="border-0 shadow-sm rounded-2xl bg-teal-500 text-white">
 					<CardContent className="p-5 flex items-center justify-between">
 						<div>
 							<span className="text-[9px] font-bold text-teal-100 uppercase tracking-widest block">RAB Grand Total ({activeTab.toUpperCase()})</span>
@@ -376,6 +376,70 @@ export default function RabDetailPage() {
 					>
 						<FileSpreadsheet size={12} className="mr-1" /> Excel
 					</Button>
+				</div>
+			</div>
+
+			{/* Keterangan Rumus Per Jenis RAB */}
+			<div className="bg-white border border-gray-105 p-5 rounded-2xl flex items-start gap-4 shadow-sm animate-in fade-in duration-300">
+				<div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+					<FileText size={18} />
+				</div>
+				<div className="space-y-2 flex-1">
+					<h3 className="text-xs font-black text-gray-800 uppercase tracking-wider">
+						Keterangan Rumus & Penghitungan: <span className="text-teal-650 font-black">RAB {activeTab.toUpperCase()}</span>
+					</h3>
+					{activeTab === 'internal' && (
+						<div className="text-[11px] leading-relaxed text-gray-600 space-y-1.5">
+							<p>
+								Format ini digunakan untuk <strong>estimasi biaya dan profit internal perusahaan</strong>. Nilai markup untuk bahan baku, finishing, dan aksesoris ditampilkan terpisah agar mudah dievaluasi.
+							</p>
+							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
+								<div>&bull; Harga Dasar Ruangan = (Total Bahan Baku + Total Finishing) &times; (1 + Markup Ruangan%)</div>
+								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
+								<div>&bull; Aksesoris = Harga Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty</div>
+								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+							</div>
+						</div>
+					)}
+					{activeTab === 'kontrak' && (
+						<div className="text-[11px] leading-relaxed text-gray-600 space-y-1.5">
+							<p>
+								Format ini adalah <strong>penawaran resmi yang akan dikirimkan ke Klien</strong>. Persentase markup tidak ditampilkan ke klien, melainkan langsung dilebur/digabungkan ke dalam nilai harga satuan.
+							</p>
+							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
+								<div>&bull; Harga Dasar Ruangan (Termasuk Markup) = (Total Bahan Baku + Total Finishing) &times; (1 + Markup Ruangan%)</div>
+								<div>&bull; Harga Satuan (Terlebur) = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
+								<div>&bull; Aksesoris (Terlebur) = Harga Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty</div>
+								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+							</div>
+						</div>
+					)}
+					{activeTab === 'vendor' && (
+						<div className="text-[11px] leading-relaxed text-gray-600 space-y-1.5">
+							<p>
+								Format ini digunakan untuk <strong>negosiasi atau acuan pengerjaan oleh Vendor/Kontraktor Lapangan</strong>. Seluruh persentase markup dihilangkan (0%) untuk menyajikan Harga Pokok Produksi (HPP) bersih.
+							</p>
+							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
+								<div>&bull; Harga Dasar Ruangan = Total Bahan Baku + Total Finishing (Tanpa Markup)</div>
+								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
+								<div>&bull; Aksesoris = Harga Aksesoris &times; Qty (Tanpa Markup)</div>
+								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+							</div>
+						</div>
+					)}
+					{activeTab === 'jasa' && (
+						<div className="text-[11px] leading-relaxed text-gray-600 space-y-1.5">
+							<p>
+								Format ini digunakan untuk <strong>menghitung upah jasa perakitan/pemasangan saja</strong>. Seluruh material bahan baku utama dinilai berdasarkan tarif upah jasa pasangnya saja, sedangkan aksesoris ditiadakan sepenuhnya (Rp 0).
+							</p>
+							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
+								<div>&bull; Harga Dasar Ruangan = Total Jasa Pasang Bahan Baku + Total Finishing (Tanpa Markup)</div>
+								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
+								<div>&bull; Aksesoris = Rp 0 (Aksesoris dihilangkan)</div>
+								<div>&bull; Harga Total = Harga Satuan</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 

@@ -130,7 +130,7 @@ export default function ProjectManagementPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="p-4 bg-gradient-to-br from-teal-50 to-teal-100/50 border-teal-200/60 dark:from-teal-950/20 dark:to-teal-950/10 dark:border-teal-900/40">
+        <Card className="p-4 bg-teal-50 border-teal-200/60 dark:bg-teal-950/20 dark:border-teal-900/40">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-teal-500/10 rounded-lg text-teal-600 dark:text-teal-400">
               <ClipboardCheck className="h-5 w-5" />
@@ -211,7 +211,7 @@ export default function ProjectManagementPage() {
                           </div>
                           <div className="w-full bg-teal-100 dark:bg-teal-950/60 h-2 rounded-full overflow-hidden">
                             <div 
-                              className="bg-gradient-to-r from-teal-500 to-teal-600 h-full rounded-full transition-all duration-500" 
+                              className="bg-teal-500 h-full rounded-full transition-all duration-500" 
                               style={{ width: `${progress}%` }}
                             />
                           </div>

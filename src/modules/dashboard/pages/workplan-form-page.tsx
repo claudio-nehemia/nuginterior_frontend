@@ -709,7 +709,7 @@ export default function WorkplanFormPage() {
         </Card>
 
         {/* Duration box */}
-        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border-l-4 border-teal-500 overflow-hidden flex flex-col justify-center p-6">
+        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-teal-50 border-l-4 border-teal-500 overflow-hidden flex flex-col justify-center p-6">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Durasi Proyek</span>
             <div className="flex items-baseline gap-2">

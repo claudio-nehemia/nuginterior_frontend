@@ -475,10 +475,10 @@ export default function CompaniesPage() {
       {!isEditing ? (
         // Read-only Details View
         <Card className="border-gray-100 shadow-sm rounded-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-300 to-emerald-300" />
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-400" />
           <CardHeader className="pt-8 pb-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-emerald-400 rounded-2xl flex items-center justify-center text-white shadow-md">
+              <div className="w-16 h-16 bg-teal-500 rounded-2xl flex items-center justify-center text-white shadow-md">
                 <Building2 size={32} />
               </div>
               <div>
@@ -555,7 +555,7 @@ export default function CompaniesPage() {
                 <Receipt size={14} /> Informasi Rekening Bank (Invoice / BAST)
               </h3>
               {myCompany?.bank_name ? (
-                <div className="bg-gradient-to-br from-teal-50/30 to-emerald-50/30 border border-teal-100/50 rounded-xl p-4 grid grid-cols-3 gap-4 text-xs">
+                <div className="bg-teal-50/30 border border-teal-100/50 rounded-xl p-4 grid grid-cols-3 gap-4 text-xs">
                   <div>
                     <span className="text-[10px] font-bold text-teal-600 uppercase block tracking-wider mb-0.5">Nama Bank</span>
                     <span className="font-bold text-gray-700">{myCompany.bank_name}</span>
@@ -581,7 +581,7 @@ export default function CompaniesPage() {
         // Form Edit Mode
         <form onSubmit={handleUpdate}>
           <Card className="border-gray-100 shadow-sm rounded-2xl overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-300 to-emerald-300" />
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-400" />
             <CardHeader className="pt-8 pb-4">
               <CardTitle className="text-lg font-bold text-gray-800">Edit Profil Perusahaan</CardTitle>
               <CardDescription className="text-xs">Ubah data identitas resmi dan informasi invoice perusahaan Anda</CardDescription>
