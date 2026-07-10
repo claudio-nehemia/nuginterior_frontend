@@ -72,7 +72,7 @@ export default function WorkplanFormPage() {
 
   // User authentication context
   const user = useAuthStore(state => state.user);
-  const isAdmin = user?.role?.nama_role === 'Super Admin' || user?.role?.nama_role === 'Admin';
+  const isAdmin = user?.permissions?.includes('workplan.update') || user?.role?.nama_role === 'Super Admin' || user?.role?.nama_role === 'Admin';
 
   // Timeline Extension Modal State
   const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);

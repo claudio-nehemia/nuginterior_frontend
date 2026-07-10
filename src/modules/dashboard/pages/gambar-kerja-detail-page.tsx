@@ -109,10 +109,10 @@ export default function GambarKerjaDetailPage() {
   // Check upload permission
   const canUpload = (() => {
     if (!currentUser) return false;
-    // Super admin can always upload
-    if (currentUser.role?.nama_role === 'Super Admin') return true;
+    // Anyone with moodboard.update (Admin, Owner, Super Admin, etc.) can upload
+    if (currentUser.permissions?.includes('moodboard.update')) return true;
 
-    // Others must be in survey ulang team
+    // Fallback: check if user is in survey ulang team
     if (!survey || !survey.survey_ulang_team_ids) return false;
     try {
       const teamIDs = typeof survey.survey_ulang_team_ids === 'string'
@@ -124,11 +124,10 @@ export default function GambarKerjaDetailPage() {
     }
   })();
 
-  // Check review/approve permission (Super Admin or PM)
+  // Check review/approve permission
   const canApprove = (() => {
     if (!currentUser) return false;
-    const role = currentUser.role?.nama_role;
-    return role === 'Super Admin' || role === 'Project Manager';
+    return currentUser.permissions?.includes('moodboard.update');
   })();
 
   const handleUploadFiles = async (filesToUpload: FileList | null) => {

@@ -99,8 +99,8 @@ export default function ProjectProgressPage() {
 
   // User authentication context
   const user = useAuthStore(state => state.user);
-  const isAdmin = user?.role?.nama_role === 'Super Admin' || user?.role?.nama_role === 'Admin';
-  const canManageDefect = ['Super Admin', 'Project Manager', 'Supervisor'].includes(user?.role?.nama_role || '');
+  const isAdmin = user?.permissions?.includes('workplan.update') || user?.role?.nama_role === 'Super Admin' || user?.role?.nama_role === 'Admin';
+  const canManageDefect = user?.permissions?.includes('workplan.update');
   
   // Active view: progress | defects
   const [activeView, setActiveView] = useState<'progress' | 'defects'>('progress');
