@@ -72,7 +72,7 @@ export default function RabPage() {
 
 
 	// Check if user has write/edit/submit access
-	const allowedRoles = ['Super Admin', 'Estimator', 'Legal Admin'];
+	const allowedRoles = ['Super Admin', 'Admin', 'Estimator', 'Legal Admin'];
 	const hasAccess = user?.role?.nama_role ? allowedRoles.includes(user.role.nama_role) : false;
 
 	const fetchData = async () => {
