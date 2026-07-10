@@ -356,9 +356,9 @@ export default function RabEditPage() {
 				<div className="space-y-1">
 					<span className="font-extrabold text-xs block text-teal-900">Alur Rumus Kalkulasi RAB Finance</span>
 					<p className="text-[11px] leading-relaxed font-semibold text-teal-800/90">
-						1. <strong>Harga Bahan</strong> = Harga Dasar Bahan Baku &times; (1 + Markup Produk) <br />
-						2. <strong>Harga Finishing</strong> = Harga Dasar Finishing &times; (1 + Markup Produk) <br />
-						3. <strong>Harga Dasar Produk</strong> = Harga Bahan + Harga Finishing <br />
+						1. <strong>Harga Bahan</strong> = Total Harga Dasar Bahan Baku <br />
+						2. <strong>Harga Finishing</strong> = Total Harga Dasar Finishing <br />
+						3. <strong>Harga Dasar Produk</strong> = (Harga Bahan + Harga Finishing) &times; (1 + Markup Produk) <br />
 						4. <strong>Harga Satuan</strong> = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk <br />
 						5. <strong>Harga Aksesoris</strong> = Harga Beli Aksesoris &times; (1 + Markup Aksesoris) &times; Qty Aksesoris <br />
 						6. <strong>Harga Total Ruangan</strong> = Harga Satuan + Total Harga Aksesoris

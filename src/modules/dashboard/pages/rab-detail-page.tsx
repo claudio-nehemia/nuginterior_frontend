@@ -394,9 +394,9 @@ export default function RabDetailPage() {
 								Format ini digunakan untuk <strong>estimasi biaya dan profit internal perusahaan</strong>. Nilai markup untuk bahan baku, finishing, dan aksesoris ditampilkan terpisah agar mudah dievaluasi.
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Bahan = Harga Dasar Bahan Baku &times; (1 + Markup Produk%)</div>
-								<div>&bull; Harga Finishing = Harga Dasar Finishing &times; (1 + Markup Produk%)</div>
-								<div>&bull; Harga Dasar Produk = Harga Bahan + Harga Finishing</div>
+								<div>&bull; Harga Bahan = Total Harga Dasar Bahan Baku</div>
+								<div>&bull; Harga Finishing = Total Harga Dasar Finishing</div>
+								<div>&bull; Harga Dasar Produk = (Harga Bahan + Harga Finishing) &times; (1 + Markup Produk%)</div>
 								<div>&bull; Harga Satuan = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
 								<div>&bull; Harga Aksesoris = Harga Beli Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty Aksesoris</div>
 								<div>&bull; Harga Total Ruangan = Harga Satuan + Harga Aksesoris</div>
@@ -409,9 +409,9 @@ export default function RabDetailPage() {
 								Format ini adalah <strong>penawaran resmi yang akan dikirimkan ke Klien</strong>. Persentase markup tidak ditampilkan ke klien, melainkan langsung dilebur/digabungkan ke dalam nilai harga satuan.
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Bahan (Terlebur) = Harga Dasar Bahan Baku &times; (1 + Markup Produk%)</div>
-								<div>&bull; Harga Finishing (Terlebur) = Harga Dasar Finishing &times; (1 + Markup Produk%)</div>
-								<div>&bull; Harga Dasar Produk = Harga Bahan + Harga Finishing</div>
+								<div>&bull; Harga Bahan (Terlebur) = Total Harga Dasar Bahan Baku</div>
+								<div>&bull; Harga Finishing (Terlebur) = Total Harga Dasar Finishing</div>
+								<div>&bull; Harga Dasar Produk = (Harga Bahan + Harga Finishing) &times; (1 + Markup Produk%)</div>
 								<div>&bull; Harga Satuan (Terlebur) = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
 								<div>&bull; Harga Aksesoris (Terlebur) = Harga Beli Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty Aksesoris</div>
 								<div>&bull; Harga Total Ruangan = Harga Satuan + Harga Aksesoris</div>
