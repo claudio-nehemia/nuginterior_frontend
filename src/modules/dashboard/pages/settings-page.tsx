@@ -33,7 +33,7 @@ export default function SettingsPage() {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [settings, setSettings] = useState<SettingItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'response' | 'company' | 'stages' | 'sidebar' | 'deadlines' | 'notifications' | 'platform'>('response');
+  const [activeTab, setActiveTab] = useState<'response' | 'company' | 'stages' | 'sidebar' | 'deadlines' | 'notifications' | 'platform' | 'contract-clauses'>('response');
 
   // State for Company Profile Form
   const [companyProfile, setCompanyProfile] = useState({
@@ -78,6 +78,10 @@ export default function SettingsPage() {
   });
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
 
+  // State for Contract Clauses
+  const [contractClauses, setContractClauses] = useState<{title: string; content: string}[]>([]);
+  const [isSavingClauses, setIsSavingClauses] = useState(false);
+
   const notificationTriggers = [
     { code: 'assign_order', label: 'Assign Order (Tim Baru Ditugaskan)', desc: 'Mengirim notifikasi ketika anggota tim baru ditugaskan ke dalam proyek.' },
     { code: 'moodboard', label: 'Tahap Moodboard (Survey Selesai)', desc: 'Mengirim notifikasi saat survey selesai dan proyek berlanjut ke tahap moodboard.' },
@@ -110,6 +114,42 @@ export default function SettingsPage() {
       toast.error('Gagal memuat konfigurasi notifikasi');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchContractClauses = async () => {
+    setIsLoading(true);
+    try {
+      const res = await api.get('/settings');
+      const data = res.data.data || [];
+      const clauseItem = data.find((item: any) => item.key === 'contract_clauses');
+      if (clauseItem) {
+        setContractClauses(JSON.parse(clauseItem.value));
+      } else {
+        // Default clauses
+        setContractClauses([
+          { title: 'PASAL 1: LINGKUP PEKERJAAN DAN OBJEK PROYEK', content: 'Pihak Pertama berkewajiban untuk menyelesaikan pekerjaan interior untuk Pihak Kedua pada proyek bernama "{nama_project}" dengan kategori jenis interior "{jenis_interior}" beralamat di "{alamat_customer}". Rincian pengerjaan mengacu sepenuhnya pada Rencana Anggaran Biaya (RAB) nomor {rab_id}.' },
+          { title: 'PASAL 2: NILAI KONTRAK', content: 'Nilai kontrak keseluruhan yang disepakati oleh kedua belah pihak adalah sebesar Rp {nilai_kontrak} (rupiah) sesuai dengan total perhitungan RAB yang telah disetujui bersama.' },
+          { title: 'PASAL 3: KETENTUAN DAN TERMIN PEMBAYARAN', content: 'Metode pembayaran disepakati menggunakan skema termin "{skema_termin}", dengan rincian pembagian sebagai berikut:\n\n{tabel_termin}' },
+          { title: 'PASAL 4: JANGKA WAKTU PENGERJAAN', content: 'Seluruh lingkup pengerjaan disepakati akan diselesaikan oleh Pihak Pertama dalam jangka waktu pengerjaan selama {lama_kontrak} terhitung sejak ditandatanganinya perjanjian ini dan pembayaran termin pertama (DP) telah diterima oleh Pihak Pertama.' },
+        ]);
+      }
+    } catch {
+      toast.error('Gagal memuat data pasal kontrak');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveClauses = async () => {
+    setIsSavingClauses(true);
+    try {
+      await api.put('/settings/contract_clauses', { value: JSON.stringify(contractClauses) });
+      toast.success('Pasal kontrak berhasil disimpan');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal menyimpan pasal kontrak');
+    } finally {
+      setIsSavingClauses(false);
     }
   };
 
@@ -841,6 +881,19 @@ export default function SettingsPage() {
         </button>
         <button
           onClick={() => {
+            setActiveTab('contract-clauses');
+            fetchContractClauses();
+          }}
+          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            activeTab === 'contract-clauses'
+              ? 'bg-white text-gray-800 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Pasal Kontrak
+        </button>
+        <button
+          onClick={() => {
             setActiveTab('notifications');
             fetchNotificationSettings();
           }}
@@ -1435,6 +1488,125 @@ export default function SettingsPage() {
                 className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs shadow-md shadow-teal-500/10 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {isSavingStages ? 'Menyimpan...' : 'Simpan Templat'}
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : activeTab === 'contract-clauses' ? (
+        <Card className="border-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white animate-in slide-in-from-right duration-300">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-gray-800 tracking-tight">Manajemen Pasal Kontrak</h2>
+              <p className="text-[10px] font-medium text-gray-400 mt-0.5">Atur isi pasal-pasal yang akan ditampilkan dalam dokumen PDF kontrak proyek.</p>
+            </div>
+            <button
+              onClick={() => setContractClauses(prev => [...prev, { title: `PASAL ${prev.length + 1}: JUDUL PASAL BARU`, content: 'Isi pasal baru...' }])}
+              className="px-3.5 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-600 font-bold text-xs flex items-center gap-1 transition-colors"
+            >
+              <Plus size={14} /> Tambah Pasal
+            </button>
+          </div>
+          <CardContent className="p-6 space-y-5">
+            {/* Info Banner - Placeholder Reference */}
+            <div className="bg-teal-50 border border-teal-200/80 p-4 rounded-2xl flex items-start gap-3 text-teal-800">
+              <AlertCircle size={18} className="text-teal-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-extrabold text-[11px] block text-teal-900">Placeholder Dinamis yang Tersedia</span>
+                <p className="text-[10px] leading-relaxed font-medium text-teal-700">
+                  Gunakan kode berikut di dalam isi pasal dan akan otomatis digantikan dengan data aktual saat PDF dicetak:
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {['{nama_project}', '{jenis_interior}', '{alamat_customer}', '{nama_customer}', '{nama_perusahaan}', '{direktur_perusahaan}', '{alamat_perusahaan}', '{nilai_kontrak}', '{skema_termin}', '{lama_kontrak}', '{rab_id}', '{tabel_termin}'].map(ph => (
+                    <span key={ph} className="px-2 py-0.5 bg-white/70 border border-teal-300/50 rounded-md text-[9px] font-mono font-bold text-teal-700">{ph}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="text-center py-12 text-gray-400 text-xs">Loading...</div>
+            ) : (
+              <div className="space-y-4">
+                {contractClauses.map((clause, idx) => (
+                  <div key={idx} className="p-5 rounded-2xl border border-gray-150/80 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-md transition-all">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-[10px] font-black">{idx + 1}</div>
+                        <input
+                          type="text"
+                          value={clause.title}
+                          onChange={e => {
+                            const updated = [...contractClauses];
+                            updated[idx].title = e.target.value;
+                            setContractClauses(updated);
+                          }}
+                          className="text-xs font-bold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-200 focus:border-teal-400 focus:outline-none transition-colors px-1 py-0.5 flex-1"
+                          placeholder="Judul Pasal"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (idx === 0) return;
+                            const updated = [...contractClauses];
+                            [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                            setContractClauses(updated);
+                          }}
+                          disabled={idx === 0}
+                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+                          title="Pindah ke atas"
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (idx === contractClauses.length - 1) return;
+                            const updated = [...contractClauses];
+                            [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
+                            setContractClauses(updated);
+                          }}
+                          disabled={idx === contractClauses.length - 1}
+                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+                          title="Pindah ke bawah"
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContractClauses(prev => prev.filter((_, i) => i !== idx))}
+                          className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                          title="Hapus pasal"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    <textarea
+                      value={clause.content}
+                      onChange={e => {
+                        const updated = [...contractClauses];
+                        updated[idx].content = e.target.value;
+                        setContractClauses(updated);
+                      }}
+                      rows={4}
+                      className="w-full text-xs font-medium text-gray-700 bg-gray-50/50 border border-gray-100 rounded-xl p-3 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400/20 transition-all resize-y"
+                      placeholder="Isi pasal kontrak... Gunakan placeholder seperti {nama_project} untuk data dinamis."
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex justify-end pt-4 border-t border-gray-50">
+              <button
+                type="button"
+                onClick={handleSaveClauses}
+                disabled={isSavingClauses}
+                className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs shadow-md shadow-teal-500/10 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSavingClauses ? 'Menyimpan...' : 'Simpan Pasal Kontrak'}
               </button>
             </div>
           </CardContent>
