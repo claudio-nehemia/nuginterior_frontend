@@ -394,10 +394,12 @@ export default function RabDetailPage() {
 								Format ini digunakan untuk <strong>estimasi biaya dan profit internal perusahaan</strong>. Nilai markup untuk bahan baku, finishing, dan aksesoris ditampilkan terpisah agar mudah dievaluasi.
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Dasar Ruangan = (Total Bahan Baku + Total Finishing) &times; (1 + Markup Ruangan%)</div>
-								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
-								<div>&bull; Aksesoris = Harga Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty</div>
-								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+								<div>&bull; Harga Bahan = Harga Dasar Bahan Baku &times; (1 + Markup Produk%)</div>
+								<div>&bull; Harga Finishing = Harga Dasar Finishing &times; (1 + Markup Produk%)</div>
+								<div>&bull; Harga Dasar Produk = Harga Bahan + Harga Finishing</div>
+								<div>&bull; Harga Satuan = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
+								<div>&bull; Harga Aksesoris = Harga Beli Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty Aksesoris</div>
+								<div>&bull; Harga Total Ruangan = Harga Satuan + Harga Aksesoris</div>
 							</div>
 						</div>
 					)}
@@ -407,10 +409,12 @@ export default function RabDetailPage() {
 								Format ini adalah <strong>penawaran resmi yang akan dikirimkan ke Klien</strong>. Persentase markup tidak ditampilkan ke klien, melainkan langsung dilebur/digabungkan ke dalam nilai harga satuan.
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Dasar Ruangan (Termasuk Markup) = (Total Bahan Baku + Total Finishing) &times; (1 + Markup Ruangan%)</div>
-								<div>&bull; Harga Satuan (Terlebur) = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
-								<div>&bull; Aksesoris (Terlebur) = Harga Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty</div>
-								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+								<div>&bull; Harga Bahan (Terlebur) = Harga Dasar Bahan Baku &times; (1 + Markup Produk%)</div>
+								<div>&bull; Harga Finishing (Terlebur) = Harga Dasar Finishing &times; (1 + Markup Produk%)</div>
+								<div>&bull; Harga Dasar Produk = Harga Bahan + Harga Finishing</div>
+								<div>&bull; Harga Satuan (Terlebur) = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
+								<div>&bull; Harga Aksesoris (Terlebur) = Harga Beli Aksesoris &times; (1 + Markup Aksesoris%) &times; Qty Aksesoris</div>
+								<div>&bull; Harga Total Ruangan = Harga Satuan + Harga Aksesoris</div>
 							</div>
 						</div>
 					)}
@@ -420,10 +424,12 @@ export default function RabDetailPage() {
 								Format ini digunakan untuk <strong>negosiasi atau acuan pengerjaan oleh Vendor/Kontraktor Lapangan</strong>. Seluruh persentase markup dihilangkan (0%) untuk menyajikan Harga Pokok Produksi (HPP) bersih.
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Dasar Ruangan = Total Bahan Baku + Total Finishing (Tanpa Markup)</div>
-								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
-								<div>&bull; Aksesoris = Harga Aksesoris &times; Qty (Tanpa Markup)</div>
-								<div>&bull; Harga Total = Harga Satuan + Aksesoris</div>
+								<div>&bull; Harga Bahan (Tanpa Markup) = Harga Dasar Bahan Baku</div>
+								<div>&bull; Harga Finishing (Tanpa Markup) = Harga Dasar Finishing</div>
+								<div>&bull; Harga Dasar Produk = Harga Bahan + Harga Finishing</div>
+								<div>&bull; Harga Satuan = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
+								<div>&bull; Harga Aksesoris (Tanpa Markup) = Harga Beli Aksesoris &times; Qty Aksesoris</div>
+								<div>&bull; Harga Total Ruangan = Harga Satuan + Harga Aksesoris</div>
 							</div>
 						</div>
 					)}
@@ -433,10 +439,12 @@ export default function RabDetailPage() {
 								Format ini digunakan untuk <strong>menghitung upah jasa perakitan/pemasangan saja</strong>. Seluruh material bahan baku utama dinilai berdasarkan tarif upah jasa pasangnya saja, sedangkan aksesoris ditiadakan sepenuhnya (Rp 0).
 							</p>
 							<div className="bg-gray-50 p-2.5 rounded-xl font-mono text-[10px] space-y-1 text-gray-700">
-								<div>&bull; Harga Dasar Ruangan = Total Jasa Pasang Bahan Baku + Total Finishing (Tanpa Markup)</div>
-								<div>&bull; Harga Satuan = Harga Dasar Ruangan &times; Volume (P &times; L &times; T) &times; Qty</div>
-								<div>&bull; Aksesoris = Rp 0 (Aksesoris dihilangkan)</div>
-								<div>&bull; Harga Total = Harga Satuan</div>
+								<div>&bull; Harga Jasa Bahan = Harga Jasa Bahan Baku</div>
+								<div>&bull; Harga Jasa Finishing = Harga Dasar Finishing (Tanpa Markup)</div>
+								<div>&bull; Harga Dasar Produk = Harga Jasa Bahan + Harga Jasa Finishing</div>
+								<div>&bull; Harga Satuan = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk</div>
+								<div>&bull; Harga Aksesoris = Rp 0 (Aksesoris dihilangkan)</div>
+								<div>&bull; Harga Total Ruangan = Harga Satuan</div>
 							</div>
 						</div>
 					)}
@@ -455,7 +463,7 @@ export default function RabDetailPage() {
 								<TableHead className="py-3">Finishing</TableHead>
 								<TableHead className="text-right py-3">Harga Finishing</TableHead>
 								{activeTab === 'internal' && (
-									<TableHead className="text-center py-3 w-16">Markup</TableHead>
+									<TableHead className="text-center py-3 w-20">Markup Produk</TableHead>
 								)}
 								<TableHead className="text-center py-3">Qty / Volume</TableHead>
 								<TableHead className="text-right py-3">Harga Satuan</TableHead>

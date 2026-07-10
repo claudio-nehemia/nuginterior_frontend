@@ -367,10 +367,12 @@ export default function RabCreatePage() {
 				<div className="space-y-1">
 					<span className="font-extrabold text-xs block text-teal-900">Alur Rumus Kalkulasi RAB Finance</span>
 					<p className="text-[11px] leading-relaxed font-semibold text-teal-800/90">
-						1. <strong>Harga Dasar Produksi</strong> = (Total Bahan Baku + Total Finishing) * (1 + Room Markup) <br />
-						2. <strong>Harga Satuan</strong> = Harga Dasar Produksi * Dimensi (P * L * T) * Qty (Produk) <br />
-						3. <strong>Harga Aksesoris</strong> = Harga Beli Item * (1 + Aksesoris Markup) * Qty Aksesoris <br />
-						4. <strong>Harga Total Ruangan</strong> = Harga Satuan + Total Harga Aksesoris
+						1. <strong>Harga Bahan</strong> = Harga Dasar Bahan Baku &times; (1 + Markup Produk) <br />
+						2. <strong>Harga Finishing</strong> = Harga Dasar Finishing &times; (1 + Markup Produk) <br />
+						3. <strong>Harga Dasar Produk</strong> = Harga Bahan + Harga Finishing <br />
+						4. <strong>Harga Satuan</strong> = Harga Dasar Produk &times; Volume (P &times; L &times; T) &times; Qty Produk <br />
+						5. <strong>Harga Aksesoris</strong> = Harga Beli Aksesoris &times; (1 + Markup Aksesoris) &times; Qty Aksesoris <br />
+						6. <strong>Harga Total Ruangan</strong> = Harga Satuan + Total Harga Aksesoris
 					</p>
 				</div>
 			</div>
@@ -429,7 +431,7 @@ export default function RabCreatePage() {
 								</div>
 								<div className="flex items-center gap-3">
 									<div className="flex items-center gap-1.5">
-										<span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Room Markup</span>
+										<span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Markup Produk</span>
 										<Input
 											type="text"
 											value={room.markup}
