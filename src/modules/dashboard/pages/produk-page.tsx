@@ -452,7 +452,11 @@ export default function ProdukPage() {
                   <TableCell colSpan={6} className="h-32 text-center text-xs text-gray-400 font-bold">Belum ada produk</TableCell>
                 </TableRow>
               ) : filtered.map((p) => (
-                <TableRow key={p.id} className="hover:bg-gray-50/50 border-gray-100 transition-colors">
+                <TableRow 
+                  key={p.id} 
+                  className="hover:bg-gray-50/50 border-gray-100 transition-colors cursor-pointer"
+                  onClick={() => { setSelectedProduk(p); setDetailImageIndex(0); setIsDetailOpen(true); setIsImagePreviewOpen(false); setImagePreviewUrl(null); }}
+                >
                   <TableCell className="pl-6">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
                       {p.images?.[0]?.image ? (
@@ -476,7 +480,7 @@ export default function ProdukPage() {
                       {p.bahan_bakus?.length || 0} Varian
                     </span>
                   </TableCell>
-                  <TableCell className="text-right pr-6">
+                  <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1">
                       <button 
                         onClick={() => { setSelectedProduk(p); setDetailImageIndex(0); setIsDetailOpen(true); setIsImagePreviewOpen(false); setImagePreviewUrl(null); }}
@@ -583,56 +587,65 @@ export default function ProdukPage() {
                 
                 <div className="space-y-2">
                   {produkFormData.bahan_baku.map((row, idx) => (
-                    <div key={idx} className="flex items-end gap-2 p-2.5 bg-gray-50/50 rounded-xl border border-gray-100 group animate-in slide-in-from-left-2 duration-300">
-                      <div className="flex-1 space-y-1">
-                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Bahan Baku</label>
-                        <Select 
-                          value={row.bahan_baku_id} 
-                          onValueChange={(v) => updateBahanBakuRow(idx, 'bahan_baku_id', v)}
+                    <div key={idx} className="space-y-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100 group animate-in slide-in-from-left-2 duration-300">
+                      {/* Baris Pertama: Bahan Baku & Delete Button */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Bahan Baku</label>
+                          <Select 
+                            value={row.bahan_baku_id} 
+                            onValueChange={(v) => updateBahanBakuRow(idx, 'bahan_baku_id', v)}
+                          >
+                            <SelectTrigger className="h-8 bg-white border-gray-100 rounded-lg text-xs">
+                              <SelectValue placeholder="Pilih Bahan Baku" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-gray-100">
+                              {bahanBakus.map(bb => (
+                                <SelectItem key={bb.id} value={bb.id.toString()} className="text-xs rounded-lg">{bb.nama_bahan_baku}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => removeBahanBakuRow(idx)}
+                          className="p-1.5 text-gray-300 hover:text-red-500 transition-colors mt-5"
                         >
-                          <SelectTrigger className="h-8 bg-white border-gray-100 rounded-lg text-xs">
-                            <SelectValue placeholder="Pilih Bahan Baku" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl border-gray-100">
-                            {bahanBakus.map(bb => (
-                              <SelectItem key={bb.id} value={bb.id.toString()} className="text-xs rounded-lg">{bb.nama_bahan_baku}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          <X size={15} />
+                        </button>
                       </div>
-                      <div className="flex-1 space-y-1">
-                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Dasar</label>
-                        <Input 
-                          type="text"
-                          inputMode="numeric"
-                          value={formatNumberInput(row.harga_dasar)}
-                          onChange={(e) => updateBahanBakuRow(idx, 'harga_dasar', normalizeNumberInput(e.target.value))}
-                          className="h-8 bg-white border-gray-100 rounded-lg text-xs"
-                        />
+
+                      {/* Baris Kedua: Harga Dasar & Harga Jasa */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Dasar</label>
+                          <Input 
+                            type="text"
+                            inputMode="numeric"
+                            value={formatNumberInput(row.harga_dasar)}
+                            onChange={(e) => updateBahanBakuRow(idx, 'harga_dasar', normalizeNumberInput(e.target.value))}
+                            className="h-8 bg-white border-gray-100 rounded-lg text-xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Jasa</label>
+                          <Input 
+                            type="text"
+                            inputMode="numeric"
+                            value={formatNumberInput(row.harga_jasa)}
+                            onChange={(e) => updateBahanBakuRow(idx, 'harga_jasa', normalizeNumberInput(e.target.value))}
+                            className="h-8 bg-white border-gray-100 rounded-lg text-xs"
+                          />
+                        </div>
                       </div>
-                      <div className="flex-1 space-y-1">
-                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Jasa</label>
-                        <Input 
-                          type="text"
-                          inputMode="numeric"
-                          value={formatNumberInput(row.harga_jasa)}
-                          onChange={(e) => updateBahanBakuRow(idx, 'harga_jasa', normalizeNumberInput(e.target.value))}
-                          className="h-8 bg-white border-gray-100 rounded-lg text-xs"
-                        />
-                      </div>
-                      <div className="w-24 text-right flex flex-col justify-end pb-0.5 h-8">
-                        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider block">Total Opsi</span>
+
+                      {/* Baris Ketiga: Total Opsi */}
+                      <div className="flex justify-between items-center bg-white/50 p-2 rounded-lg border border-gray-100/50">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Total Opsi</span>
                         <span className="text-xs font-black text-teal-600">
                           {formatIDR(parseNumberInput(row.harga_dasar) + parseNumberInput(row.harga_jasa))}
                         </span>
                       </div>
-                      <button 
-                        type="button" 
-                        onClick={() => removeBahanBakuRow(idx)}
-                        className="mb-1 p-1.5 text-gray-300 hover:text-red-500 transition-colors"
-                      >
-                        <X size={13} />
-                      </button>
                     </div>
                   ))}
                 </div>
@@ -648,9 +661,9 @@ export default function ProdukPage() {
                       <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider">Ringkasan Variasi Opsi</span>
                       <span className="px-2 py-0.5 bg-teal-100/60 text-teal-800 rounded-full text-[9px] font-black">{summary.count} Bahan Baku</span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Rentang Harga Produk</span>
+                    <div className="space-y-3 pt-1">
+                      <div className="flex justify-between items-center bg-white/40 p-2.5 rounded-xl border border-teal-100/30">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Rentang Harga Produk</span>
                         <span className="text-xs font-black text-teal-600">
                           {summary.minTotal === summary.maxTotal 
                             ? formatIDR(summary.minTotal) 
@@ -659,16 +672,16 @@ export default function ProdukPage() {
                         </span>
                       </div>
                       {summary.cheapest && (
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Harga Terendah</span>
+                        <div className="flex justify-between items-center bg-white/40 p-2.5 rounded-xl border border-teal-100/30">
+                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Terendah</span>
                           <span className="text-xs font-bold text-gray-700">
                             {formatIDR(summary.cheapest.price)} <span className="text-[9px] font-bold text-gray-400">({summary.cheapest.name})</span>
                           </span>
                         </div>
                       )}
                       {summary.expensive && (
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Harga Tertinggi</span>
+                        <div className="flex justify-between items-center bg-white/40 p-2.5 rounded-xl border border-teal-100/30">
+                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Harga Tertinggi</span>
                           <span className="text-xs font-bold text-gray-700">
                             {formatIDR(summary.expensive.price)} <span className="text-[9px] font-bold text-gray-400">({summary.expensive.name})</span>
                           </span>

@@ -50,7 +50,6 @@ const getIcon = (name: string) => {
 export default function DashboardLayout() {
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
-  const isSuperAdmin = user?.company_id === 1 && user?.role?.nama_role === 'Super Admin';
   const navigate = useNavigate();
   const location = useLocation();
   const [pageTitle, setPageTitle] = useState<string | null>(null);
@@ -245,12 +244,6 @@ export default function DashboardLayout() {
             <div className="text-center py-4 text-gray-400 text-[10px] font-semibold">Loading menu...</div>
           ) : (
             sidebarConfig
-              .filter((cat: any) => {
-                if (isSuperAdmin) {
-                  return cat.id === 'master_data';
-                }
-                return true;
-              })
               .map((cat: any) => {
               const allowedItems = (cat.items || []).filter((item: any) => {
                 if (item.visible === false) return false;

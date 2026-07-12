@@ -397,7 +397,15 @@ export default function ContractPage() {
                   const hasResponse = row.contract && row.contract.response_time !== null;
                   
                   return (
-                    <TableRow key={row.rab_id} className="border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <TableRow 
+                      key={row.rab_id} 
+                      className={`border-gray-50 hover:bg-gray-50/50 transition-colors ${row.status !== 'belum_dibuat' ? 'cursor-pointer' : ''}`}
+                      onClick={() => {
+                        if (row.status !== 'belum_dibuat') {
+                          openDetailModal(row);
+                        }
+                      }}
+                    >
                       <TableCell className="px-6 py-4 font-bold text-xs text-gray-800">{row.nomor_order}</TableCell>
                       <TableCell className="py-4">
                         <div className="space-y-0.5">
@@ -425,7 +433,7 @@ export default function ContractPage() {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="py-4 text-right px-6">
+                      <TableCell className="py-4 text-right px-6" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
                           {row.status === 'belum_dibuat' && (
                             <>

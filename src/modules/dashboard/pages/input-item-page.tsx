@@ -331,7 +331,17 @@ export default function InputItemPage() {
                   }
 
                   return (
-                    <TableRow key={df.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow 
+                      key={df.id} 
+                      className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                      onClick={() => {
+                        if (existingPlan) {
+                          navigate(`/dashboard/input-item/${existingPlan.id}`);
+                        } else if (!isCreateButtonDisabled) {
+                          navigate(`/dashboard/input-item/${df.id}/create`);
+                        }
+                      }}
+                    >
                       <TableCell className="px-6 py-4">
                         <div className="space-y-0.5">
                           <span className="font-extrabold text-xs text-gray-800 block">{order.nama_project}</span>
@@ -340,7 +350,7 @@ export default function InputItemPage() {
                       </TableCell>
 
                       {config.response_enabled && (
-                        <TableCell className="py-4 text-xs">
+                        <TableCell className="py-4 text-xs" onClick={(e) => e.stopPropagation()}>
                           {hasDesignerResponse ? (
                             <span className="text-emerald-600 font-semibold flex items-center gap-1">
                               ✓ {existingPlan?.response_by?.split('@')[0]} • {formatResponseTime(existingPlan?.response_time)}
@@ -358,7 +368,7 @@ export default function InputItemPage() {
                       )}
 
                       {config.marketing_response_enabled && (
-                        <TableCell className="py-4 text-xs">
+                        <TableCell className="py-4 text-xs" onClick={(e) => e.stopPropagation()}>
                           {hasMarketingResponse ? (
                             <span className="text-purple-600 font-semibold flex items-center gap-1">
                               ✓ {existingPlan?.marketing_response_by?.split('@')[0]} • {formatResponseTime(existingPlan?.marketing_response_time)}
@@ -393,7 +403,7 @@ export default function InputItemPage() {
                         )}
                       </TableCell>
 
-                      <TableCell className="text-right px-6 py-4">
+                      <TableCell className="text-right px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                           {existingPlan ? (
                             <>

@@ -385,7 +385,7 @@ export default function RabPage() {
 								paginatedRabs.map(rab => {
 									const order = rab.order!;
 									return (
-										<TableRow key={rab.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+										<TableRow key={rab.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer" onClick={() => navigate(`/dashboard/rab/${rab.id}`)}>
 											<TableCell className="px-6 py-4">
 												<div className="space-y-0.5">
 													<span className="font-extrabold text-xs text-gray-800 block">{order?.nama_project || 'Project'}</span>
@@ -413,7 +413,7 @@ export default function RabPage() {
 													</span>
 												)}
 											</TableCell>
-											<TableCell className="text-right px-6 py-4">
+											<TableCell className="text-right px-6 py-4" onClick={(e) => e.stopPropagation()}>
 												<div className="flex items-center justify-end gap-2 transition-all">
 													<button
 														onClick={() => navigate(`/dashboard/rab/${rab.id}`)}
@@ -423,16 +423,19 @@ export default function RabPage() {
 														<Eye size={14} />
 													</button>
 													
+													{(rab.status === 'draft' || rab.status === 'submitted') && (
+														<button
+															onClick={() => navigate(`/dashboard/rab/${rab.id}/edit`)}
+															disabled={!hasAccess}
+															className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-30 disabled:pointer-events-none"
+															title="Edit RAB"
+														>
+															<Pencil size={14} />
+														</button>
+													)}
+													
 													{rab.status === 'draft' && (
 														<>
-															<button
-																onClick={() => navigate(`/dashboard/rab/${rab.id}/edit`)}
-																disabled={!hasAccess}
-																className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-30 disabled:pointer-events-none"
-																title="Edit RAB"
-															>
-																<Pencil size={14} />
-															</button>
 															<button
 																onClick={() => handleDelete(rab.id)}
 																disabled={!hasAccess}

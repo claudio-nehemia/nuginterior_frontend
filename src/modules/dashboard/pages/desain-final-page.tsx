@@ -382,7 +382,17 @@ export default function DesainFinalPage() {
                   const isAwaitingResponse = config.response_enabled && (!df || !df.response_by);
 
                   return (
-                    <TableRow key={m.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow 
+                      key={m.id} 
+                      className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                      onClick={() => {
+                        if (df && df.files && df.files.length > 0) {
+                          navigate(`/dashboard/desain-final/${order.id}`);
+                        } else if (!isAwaitingResponse) {
+                          navigate(`/dashboard/desain-final/${order.id}/create`);
+                        }
+                      }}
+                    >
                       {/* Project & Client */}
                       <TableCell className="px-6 py-4">
                         <div className="space-y-0.5">
@@ -414,7 +424,7 @@ export default function DesainFinalPage() {
 
                       {/* Response Status */}
                       {(config.response_enabled || config.marketing_response_enabled) && (
-                        <TableCell className="py-4">
+                        <TableCell className="py-4" onClick={(e) => e.stopPropagation()}>
                           <div className="space-y-1.5">
                             {/* Designer Response */}
                             {config.response_enabled && (
@@ -449,7 +459,7 @@ export default function DesainFinalPage() {
                       )}
 
                       {/* Actions */}
-                      <TableCell className="text-right px-6 py-4">
+                      <TableCell className="text-right px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                           {/* Show Detail Button if final design exists */}
                           {df && df.files && df.files.length > 0 && (

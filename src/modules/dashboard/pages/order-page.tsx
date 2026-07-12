@@ -476,7 +476,7 @@ export default function OrderPage() {
                   <TableRow><TableCell colSpan={9} className="text-center py-12 text-gray-400 text-xs">Tidak ada order</TableCell></TableRow>
                 ) : (
                   filteredOrders.map((order) => (
-                    <TableRow key={order.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow key={order.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer" onClick={() => navigate('/dashboard/order/' + order.id + '/edit')}>
                       <TableCell className="font-mono text-[10px] font-bold text-teal-600 px-6 py-3 whitespace-nowrap">{order.nomor_order}</TableCell>
                       <TableCell className="py-3">
                         <div className="font-bold text-xs text-gray-700">{order.nama_project}</div>
@@ -514,7 +514,7 @@ export default function OrderPage() {
                           {formatLabel(order.payment_status)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-right px-6 py-3">
+                      <TableCell className="text-right px-6 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => navigate(`/dashboard/order/${order.id}/edit`)} className="p-1.5 text-gray-400 hover:text-teal-500 hover:bg-teal-50 rounded-md transition-colors">
                             <Pencil size={14} strokeWidth={2} />

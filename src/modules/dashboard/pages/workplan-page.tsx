@@ -239,7 +239,11 @@ export default function WorkplanPage() {
                   const isLengkap = item.status === 'lengkap';
 
                   return (
-                    <TableRow key={o.id} className="border-b border-gray-50 hover:bg-gray-50/30 transition-colors">
+                    <TableRow 
+                      key={o.id} 
+                      className="border-b border-gray-50 hover:bg-gray-50/30 transition-colors cursor-pointer"
+                      onClick={() => handleRedirect(o.id, item)}
+                    >
                       <TableCell className="text-xs font-bold text-gray-500 pl-6">{idx + 1}</TableCell>
                       <TableCell className="py-4">
                         <div className="flex flex-col gap-0.5">
@@ -282,7 +286,7 @@ export default function WorkplanPage() {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="text-right pr-6">
+                      <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
                           {config.response_enabled && !hasResponse ? (
                             <Button

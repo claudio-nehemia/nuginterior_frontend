@@ -266,30 +266,20 @@ export default function RabDetailPage() {
 				</div>
 
 				<div className="flex items-center gap-2 flex-wrap">
-					{isSubmitted ? (
+					<Button
+						onClick={() => navigate(`/dashboard/rab/${rab.id}/edit`)}
+						variant="outline"
+						className="h-9 font-extrabold text-xs px-4 rounded-xl border-teal-200 text-teal-600 hover:bg-teal-50"
+					>
+						<Edit size={14} className="mr-1.5" /> Edit RAB
+					</Button>
+					{!isSubmitted && (
 						<Button
-							disabled
-							variant="outline"
-							className="h-9 font-extrabold text-xs px-4 rounded-xl border-gray-200 text-gray-400"
+							onClick={handleSubmitRAB}
+							className="h-9 font-extrabold text-xs px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white hover:text-white shadow-lg shadow-teal-600/10 border-0 inline-flex items-center justify-center"
 						>
-							<Edit size={14} className="mr-1.5" /> Edit (Disabled)
+							<CheckCircle size={14} className="mr-1.5" /> Submit & Kunci RAB
 						</Button>
-					) : (
-						<>
-							<Button
-								onClick={() => navigate(`/dashboard/rab/${rab.id}/edit`)}
-								variant="outline"
-								className="h-9 font-extrabold text-xs px-4 rounded-xl border-teal-200 text-teal-600 hover:bg-teal-50"
-							>
-								<Edit size={14} className="mr-1.5" /> Edit RAB
-							</Button>
-							<Button
-								onClick={handleSubmitRAB}
-								className="h-9 font-extrabold text-xs px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white hover:text-white shadow-lg shadow-teal-600/10 border-0 inline-flex items-center justify-center"
-							>
-								<CheckCircle size={14} className="mr-1.5" /> Submit & Kunci RAB
-							</Button>
-						</>
 					)}
 				</div>
 			</div>
@@ -335,7 +325,7 @@ export default function RabDetailPage() {
 						<span className="font-extrabold text-xs block text-emerald-900">Dokumen Telah Disubmit</span>
 						<p className="text-[10px] leading-relaxed font-semibold text-emerald-800/90">
 							RAB ini telah dikunci pada {rab.submitted_at ? new Date(rab.submitted_at).toLocaleString('id-ID') : '-'} oleh {rab.submitted_by || 'Finance'}. 
-							Akses pengubahan dinonaktifkan demi menjaga integritas data akuntansi.
+							Namun, Anda tetap dapat melakukan pengubahan apabila diperlukan.
 						</p>
 					</div>
 				</div>

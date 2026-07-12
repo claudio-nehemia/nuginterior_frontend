@@ -308,7 +308,11 @@ export default function GambarKerjaPage() {
                   const isResponded = !!gk?.response_by;
 
                   return (
-                    <TableRow key={s.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow 
+                      key={s.id} 
+                      className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                      onClick={() => handleRedirect(s.order!.id, gk)}
+                    >
                       <TableCell className="px-6 py-3.5 font-bold text-xs text-gray-700">
                         <div>{s.order?.nama_project}</div>
                         <span className="font-mono text-[9px] text-gray-400 font-semibold mt-0.5 block">{s.order?.nomor_order}</span>
@@ -357,7 +361,7 @@ export default function GambarKerjaPage() {
                           )}
                         </TableCell>
                       )}
-                      <TableCell className="text-right px-6 py-3.5">
+                      <TableCell className="text-right px-6 py-3.5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
                           {config.response_enabled && !isResponded ? (
                             <Button

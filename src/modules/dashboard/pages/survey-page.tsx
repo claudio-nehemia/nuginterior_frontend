@@ -441,7 +441,7 @@ export default function SurveyPage() {
                   const filled = isSurveyFilled(s);
                   const teams = s.order?.teams ?? [];
                   return (
-                    <TableRow key={s.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow key={s.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer" onClick={() => navigate('/dashboard/survey/' + s.id)}>
                       <TableCell className="px-6 py-3 font-bold text-xs text-gray-700">
                         <div>{s.order?.nama_project || '-'}</div>
                         {s.is_contract_deal && (
@@ -477,7 +477,7 @@ export default function SurveyPage() {
                       </TableCell>
 
                       {(config.response_enabled || config.marketing_response_enabled) && (
-                        <TableCell className="py-3">
+                        <TableCell className="py-3" onClick={(e) => e.stopPropagation()}>
                           <div className="space-y-1">
                             {s.response_by ? (
                               <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
@@ -536,7 +536,7 @@ export default function SurveyPage() {
                         )}
                       </TableCell>
 
-                      <TableCell className="text-right px-6 py-3">
+                      <TableCell className="text-right px-6 py-3" onClick={(e) => e.stopPropagation()}>
                         {!filled ? (
                           <div className="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
                             {s.is_contract_deal && (

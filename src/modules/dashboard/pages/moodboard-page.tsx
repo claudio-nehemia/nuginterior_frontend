@@ -385,7 +385,17 @@ export default function MoodboardPage() {
                   const isAwaitingResponse = config.response_enabled && (!mb || !mb.response_by);
 
                   return (
-                    <TableRow key={s.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow 
+                      key={s.id} 
+                      className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                      onClick={() => {
+                        if (mb) {
+                          navigate(`/dashboard/moodboard/${order.id}`);
+                        } else {
+                          handleCreateRedirect(order.id, mb);
+                        }
+                      }}
+                    >
                       {/* Project & Client */}
                       <TableCell className="px-6 py-4">
                         <div className="space-y-0.5">
@@ -417,7 +427,7 @@ export default function MoodboardPage() {
 
                       {/* Response Status */}
                       {(config.response_enabled || config.marketing_response_enabled) && (
-                        <TableCell className="py-4">
+                        <TableCell className="py-4" onClick={(e) => e.stopPropagation()}>
                           <div className="space-y-1.5">
                             {/* Designer Response */}
                             {config.response_enabled && (
@@ -452,7 +462,7 @@ export default function MoodboardPage() {
                       )}
 
                       {/* Actions */}
-                      <TableCell className="text-right px-6 py-4">
+                      <TableCell className="text-right px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                           {/* Show Detail Button if moodboard exists */}
                           {mb && (

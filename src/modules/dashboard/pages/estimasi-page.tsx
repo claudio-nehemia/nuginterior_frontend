@@ -374,7 +374,15 @@ export default function EstimasiPage() {
                   const isAwaitingResponse = config.response_enabled && (!m.estimasi || !m.estimasi.response_by);
 
                   return (
-                    <TableRow key={m.id} className="border-gray-50/50 hover:bg-gray-50/50 transition-colors group">
+                    <TableRow 
+                      key={m.id} 
+                      className={`border-gray-50/50 hover:bg-gray-50/50 transition-colors group ${!isAwaitingResponse ? 'cursor-pointer' : ''}`}
+                      onClick={() => {
+                        if (!isAwaitingResponse) {
+                          navigate(`/dashboard/estimasi/${m.id}`);
+                        }
+                      }}
+                    >
                       {/* Project & Client */}
                       <TableCell className="px-6 py-4">
                         <div className="space-y-0.5">
@@ -399,7 +407,7 @@ export default function EstimasiPage() {
 
                       {/* Response Status */}
                       {(config.response_enabled || config.marketing_response_enabled) && (
-                        <TableCell className="py-4">
+                        <TableCell className="py-4" onClick={(e) => e.stopPropagation()}>
                           <div className="space-y-1.5">
                             {/* Estimator Response */}
                             {config.response_enabled && (
@@ -434,7 +442,7 @@ export default function EstimasiPage() {
                       )}
 
                       {/* Action */}
-                      <TableCell className="text-right px-6 py-4">
+                      <TableCell className="text-right px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                           {isAwaitingResponse ? (
                             <span className="text-gray-400 text-[10px] font-semibold italic flex items-center gap-1">

@@ -245,11 +245,19 @@ export default function InvoicePage() {
                     const requireResponse = config.response_enabled && !hasResponded;
 
                     return (
-                      <TableRow key={row.contract_id} className="border-gray-50 hover:bg-gray-50/30 transition-colors group">
+                      <TableRow 
+                        key={row.contract_id} 
+                        className={`border-gray-50 hover:bg-gray-50/30 transition-colors group ${row.invoices.length > 0 ? 'cursor-pointer' : ''}`}
+                        onClick={() => {
+                          if (row.invoices.length > 0) {
+                            navigate(`/dashboard/invoice/${row.contract_id}`);
+                          }
+                        }}
+                      >
                         <TableCell className="font-bold text-gray-800 text-xs py-4.5 pl-6">{row.nomor_order}</TableCell>
                         <TableCell className="font-semibold text-gray-700 text-xs py-4.5">{row.nama_project}</TableCell>
                         <TableCell className="font-medium text-gray-600 text-xs py-4.5">{row.nama_customer}</TableCell>
-                        <TableCell className="py-4.5">
+                        <TableCell className="py-4.5" onClick={(e) => e.stopPropagation()}>
                           {row.termin ? (
                             <button
                               onClick={() => {
@@ -281,7 +289,7 @@ export default function InvoicePage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="py-4.5 text-center pr-6">
+                        <TableCell className="py-4.5 text-center pr-6" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-center gap-2">
                             {row.invoices.length === 0 ? (
                               <Button
