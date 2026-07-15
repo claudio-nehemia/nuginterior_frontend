@@ -106,11 +106,6 @@ export default function RabEditPage() {
 			]);
 
 			const rabData: RABDetail = rabRes.data.data;
-			if (rabData.status === 'submitted') {
-				toast.error('RAB yang sudah disubmit tidak dapat diedit');
-				navigate(`/dashboard/rab/${id}`);
-				return;
-			}
 
 			setRab(rabData);
 			setMarkupGeneral(String(rabData.markup_general));
